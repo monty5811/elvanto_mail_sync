@@ -40,9 +40,9 @@
     "OPBEAT_ORG_ID": {
       "value": ""
     },
-    "OPBEAT_SCRET_TOKEN": {
+    "OPBEAT_SECRET_TOKEN": {
       "value": ""
-    },
+    }
   },
   "addons": [
     "heroku-postgresql:hobby-dev",
