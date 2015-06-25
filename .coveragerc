@@ -1,0 +1,12 @@
+[run]
+omit =
+    *settings*
+    *tests*
+    *migrations*
+    *__init__.py*
+    *wsgi*
+    *manage.py*
+source =
+    elvanto_sync/*
+[html]
+directory = coverage_html_report

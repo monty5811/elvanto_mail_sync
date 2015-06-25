@@ -1,0 +1,13 @@
+---
+dependencies:
+    override:
+        - pip install -r requirements.txt
+test:
+  override:
+    - py.test elvanto_sync -n 2 --cov="elvanto_sync/" --cov-report="html" --flakes --isort --pep8 --junitxml="$CIRCLE_TEST_REPORTS/junit.xml"
+  post:
+    - sudo pip install codecov
+    - codecov --token="6cbdeaaa-7955-47f3-bb1b-276e88258109"
+general:
+  artifacts:
+    - "coverage_html_report"

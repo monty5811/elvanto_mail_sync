@@ -1,0 +1,8 @@
+{% load staticfiles %}{% load bootstrap3 %}
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E->G - {% if group %}{{group.name}}{% else %}Overview{% endif %}</title>
+{% bootstrap_css %}
+<link href="{% static 'css/more.css' %}" rel="stylesheet" />
+{% bootstrap_javascript jquery=1 %}

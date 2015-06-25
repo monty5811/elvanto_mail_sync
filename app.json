@@ -1,0 +1,53 @@
+{
+  "name": "elvanto2google sync",
+  "description": "Web app to sync your Elvanto groups to Google mailing lists",
+  "keywords": [
+    "elvanto",
+    "email",
+  ],
+  "website": "https://github.com/monty5811/elvanto_mail_sync",
+  "repository": "https://github.com/monty5811/elvanto_mail_sync",
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": "./manage.py migrate"
+  },
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "settings.production",
+    "DJANGO_SECRET_KEY": {
+      "generator": "secret"
+    },
+    "ELVANTO_KEY": {
+      "value": ""
+    },
+    "EMAIL_OVERRIDE_FIELD_ID": {
+      "value": ""
+    },
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": {
+      "value": ""
+    },
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": {
+      "value": ""
+    },
+    "SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS": {
+      "value": ""
+    },
+    "SOCAIL_AUTH_GOOGLE_WHITELISTED_EMAILS": {
+      "value": ""
+    },
+    "OPBEAT_APP_ID": {
+      "value": ""
+    },
+    "OPBEAT_ORG_ID": {
+      "value": ""
+    },
+    "OPBEAT_SCRET_TOKEN": {
+      "value": ""
+    },
+  },
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    "heroku-redis:test",
+    "papertrail:choklad",
+    "scheduler:standard"
+  ]
+}

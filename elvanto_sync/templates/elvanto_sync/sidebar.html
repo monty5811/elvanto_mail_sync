@@ -1,0 +1,12 @@
+<div class="col-sm-3 col-md-2 sidebar">
+  <ul class="nav nav-sidebar">
+    <li {% if group %}{% else %}class="active"{% endif %}><a href="/">Overview <span class="sr-only">(current)</span></a>
+    </li>
+  </ul>
+  <ul class="nav nav-sidebar">
+    {% for group_ in groups %}
+    <li {% if group.name == group_.name %}class="active"{% endif %}><a href="{{group_.get_absolute_url}}">{{group_.name}}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
