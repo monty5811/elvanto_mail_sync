@@ -1,52 +1,67 @@
 {
-  "name": "elvanto2google sync",
+  "name": "Elvanto Mail Sync",
   "description": "Web app to sync your Elvanto groups to Google mailing lists",
   "keywords": [
     "elvanto",
-    "email"
+    "email",
+    "django
   ],
   "website": "https://github.com/monty5811/elvanto_mail_sync",
   "repository": "https://github.com/monty5811/elvanto_mail_sync",
   "success_url": "/",
   "scripts": {
-    "postdeploy": "./manage.py migrate"
+    "postdeploy": "./manage.py migrate && ./manage.py pull_from_elvanto"
   },
   "env": {
     "DJANGO_SETTINGS_MODULE": "settings.production",
     "DJANGO_SECRET_KEY": {
       "generator": "secret"
     },
+    "DJANGO_ALLOWED_HOST": {
+      "value": "appname.herokuapp.com",
+      "required": false
+    },
     "ELVANTO_KEY": {
+      "description": "Elvanto API Key",
       "value": ""
     },
     "EMAIL_OVERRIDE_FIELD_ID": {
-      "value": ""
+      "value": "",
+      "required": false
     },
     "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": {
+      "description": "Google Client ID",
       "value": ""
     },
     "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": {
+      "description": "Google Client Secret",
       "value": ""
     },
     "SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS": {
-      "value": ""
+      "description": "It is strongly recommened you leave this blank. Comma separated list of domains from which anyone will be able to access the app.",
+      "value": "",
+      "required": false
     },
-    "SOCAIL_AUTH_GOOGLE_WHITELISTED_EMAILS": {
+    "SOCIAL_AUTH_GOOGLE_WHITELISTED_EMAILS": {
+      "description": "Comma separated list of emails that can access the app",
       "value": ""
     },
     "OPBEAT_APP_ID": {
-      "value": ""
+      "value": "",
+      "required": false
     },
     "OPBEAT_ORG_ID": {
-      "value": ""
+      "value": "",
+      "required": false
     },
     "OPBEAT_SECRET_TOKEN": {
-      "value": ""
+      "value": "",
+      "required": false
     }
   },
   "addons": [
     "heroku-postgresql:hobby-dev",
-    "heroku-redis:test",
+    "heroku-redis",
     "papertrail:choklad",
     "scheduler:standard"
   ]
