@@ -7,6 +7,10 @@ DATABASES = {
     }
 }
 
+CELERY_ALWAYS_EAGER = True
+BROKER_BACKEND = 'memory'
+TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

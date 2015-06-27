@@ -15,7 +15,6 @@ class TestElvanto():
         assert str(grp) == 'All'
 
     def test_pull_people(self):
-        # TODO test emails
         elvanto.pull_down_people()
         calvin = ElvantoPerson.objects.get(e_id='f7cfa258-d3c6-11e4-95ba-068b656294b7')
         assert str(calvin) == 'John Calvin'
