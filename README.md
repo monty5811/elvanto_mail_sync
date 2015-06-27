@@ -21,10 +21,10 @@ This app should run comfortably on Heroku's free tier providing you do not sync 
  - Create credentials on google TODO: link
  - Click the push to deploy button
  - Add secrets as config variables on heroku
+ - Scale the worker dyno up to 1
+ - Setup a recurring task to run the command `python manage.py elvanto2google` using the scheduler addon
  - Sign into the app with a user that has admin rights on your google apps domain
  - Sync your emails
-
-Setup recurring tasks to sync the data with the command `python manage.py elvanto2google`
 
 ## Limitations
 
