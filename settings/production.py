@@ -15,6 +15,7 @@ DATABASES['default']['ENGINE'] = 'django_postgrespool'
 # Celery
 BROKER_URL = os.environ.get('REDIS_URL', '')
 BROKER_POOL_LIMIT = 1
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
 # OPBEAT
