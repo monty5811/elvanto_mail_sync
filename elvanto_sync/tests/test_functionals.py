@@ -82,8 +82,8 @@ class TestUrls():
         assert not calvin.disabled_entirely
         # disable calvin
         post_data = {
-            'p_id': [calvin.pk],
-            'disabled_boolean': '1'
+            'p_id': calvin.pk,
+            'disable': 'true'
         }
         resp = clients['c_in'].post(reverse('button_update_global'), post_data)
         assert resp.status_code == 200
@@ -91,8 +91,8 @@ class TestUrls():
         assert calvin.disabled_entirely
         # re-enable him again
         post_data = {
-            'p_id': [calvin.pk],
-            'disabled_boolean': '0'
+            'p_id': calvin.pk,
+            'disable': 'false'
         }
         resp = clients['c_in'].post(reverse('button_update_global'), post_data)
         assert resp.status_code == 200
@@ -108,9 +108,9 @@ class TestUrls():
         assert geneva_grp not in calvin.disabled_groups.all()
         # disable calvin in group
         post_data = {
-            'p_id': [calvin.pk],
-            'g_id': [geneva_grp.pk],
-            'disabled_boolean': '0'
+            'p_id': calvin.pk,
+            'g_id': geneva_grp.pk,
+            'disable': 'false'
         }
         resp = clients['c_in'].post(reverse('button_update_local'), post_data)
         assert resp.status_code == 200
@@ -118,9 +118,9 @@ class TestUrls():
         assert geneva_grp in calvin.disabled_groups.all()
         # re-enable him again
         post_data = {
-            'p_id': [calvin.pk],
-            'g_id': [geneva_grp.pk],
-            'disabled_boolean': '1'
+            'p_id': calvin.pk,
+            'g_id': geneva_grp.pk,
+            'disable': 'true'
         }
         resp = clients['c_in'].post(reverse('button_update_local'), post_data)
         assert resp.status_code == 200

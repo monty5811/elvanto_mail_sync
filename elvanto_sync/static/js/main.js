@@ -1,44 +1,3 @@
-function change_global(p_id, disabled_boolean) {
-      $.ajax({
-            url : '/buttons/update_global/',
-            type : "POST",
-            data : {'method':'update_global', 'p_id': p_id, "disabled_boolean": disabled_boolean},
-            success : function(json) {
-                if (disabled_boolean > 0) {
-                    $('#global-'+json.pk).html('<div id=global-'+json.pk+'><button type="button" class="btn btn-danger" onclick="enable_global('+json.pk+')">Globally Disabled</button></div>')
-                } else {
-                    $('#global-'+json.pk).html('<div id=global-'+json.pk+'><button type="button" class="btn btn-success" onclick="disable_global('+json.pk+')">Globally Enabled</button></div>')
-                }
-            },
-            error : function(xhr,errmsg,err) {
-                console.log(xhr.status + ": " + xhr.responseText);
-            }
-        });
-}
-function enable_global(p_id) {change_global(p_id, 0)}
-function disable_global(p_id) {change_global(p_id, 1)}
-
-function change_local(g_id, p_id, disabled_boolean) {
-      $.ajax({
-            url : '/buttons/buttons/update_local/',
-            type : "POST",
-            data : {'method':'update_local', 'g_id':g_id, 'p_id': p_id, "disabled_boolean": disabled_boolean},
-            success : function(json) {
-                if (disabled_boolean > 0) {
-                    $('#local-'+json.p_pk).html('<div id=local-'+json.pk+'><button type="button" class="btn btn-danger" onclick="enable_local('+json.g_pk+', '+json.p_pk+')">Disabled</button></div>')
-                } else {
-                    $('#local-'+json.p_pk).html('<div id=local-'+json.pk+'><button type="button" class="btn btn-success" onclick="disable_local('+json.g_pk+', '+json.p_pk+')">Enabled</button></div>')
-                }
-            },
-            error : function(xhr,errmsg,err) {
-                console.log(xhr.status + ": " + xhr.responseText);
-            }
-        });
-}
-function enable_local(g_id, p_id) {change_local(g_id, p_id, 0)}
-function disable_local(g_id, p_id) {change_local(g_id, p_id, 1)}
-
-
 function push_or_pull(img_, url_) {
     var original_html = $('#buttons-all').html();
     $('#buttons-all').html('<img height="15" src="'+img_+'">');
@@ -54,7 +13,6 @@ function push_or_pull(img_, url_) {
             }
         });
 };
-
 function push_grp(img_, url_, g_id) {
     var original_html = $('#buttons-all').html();
     $('#buttons-all').html('<img height="15" src="'+img_+'">');

@@ -14,12 +14,12 @@ from elvanto_sync.tasks import (bg_push_all_groups, bg_push_group,
 class UpdateGlobal(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        post_ = dict(request.POST)
-        prsn = get_object_or_404(ElvantoPerson, pk=post_['p_id'][0])
-        if post_['disabled_boolean'][0] == '0':
-            prsn.disabled_entirely = False
-        else:
-            prsn.disabled_entirely = True
+        p_id = json.loads(request.POST.get('p_id'))
+        disable_entirely = json.loads(request.POST.get('disable'))
+        assert type(disable_entirely) is bool
+
+        prsn = get_object_or_404(ElvantoPerson, pk=p_id)
+        prsn.disabled_entirely = disable_entirely
 
         prsn.save()
         json_resp = {"pk": prsn.pk}
@@ -32,13 +32,17 @@ class UpdateGlobal(LoginRequiredMixin, View):
 class UpdateLocal(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        post_ = dict(request.POST)
-        prsn = get_object_or_404(ElvantoPerson, pk=post_['p_id'][0])
-        grp = get_object_or_404(ElvantoGroup, pk=post_['g_id'][0])
-        if post_['disabled_boolean'][0] == '0':
-            grp.group_members_disabled.add(prsn)
-        else:
+        p_id = json.loads(request.POST.get('p_id'))
+        g_id = json.loads(request.POST.get('g_id'))
+        disable_boolean = json.loads(request.POST.get('disable'))
+        assert type(disable_boolean) is bool
+
+        prsn = get_object_or_404(ElvantoPerson, pk=p_id)
+        grp = get_object_or_404(ElvantoGroup, pk=g_id)
+        if disable_boolean:
             grp.group_members_disabled.remove(prsn)
+        else:
+            grp.group_members_disabled.add(prsn)
 
         prsn.save()
         grp.save()
@@ -74,8 +78,8 @@ class PullAll(LoginRequiredMixin, View):
 class PushGroup(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        post_ = dict(request.POST)
-        grp = get_object_or_404(ElvantoGroup, pk=post_['g_id'][0])
+        g_id = json.loads(request.POST.get('g_id'))
+        grp = get_object_or_404(ElvantoGroup, pk=g_id)
         bg_push_group.delay(pk=grp.pk)
         json_resp = {'g_id': grp.pk}
         return HttpResponse(

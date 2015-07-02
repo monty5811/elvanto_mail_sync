@@ -35,14 +35,14 @@ var GroupTable = React.createClass({
     toggleLocal: function (person, groupId) {
         var that = this;
         if (person.disabled_groups.indexOf(parseInt(groupId)) > -1) {
-            var disabled_boolean = '1';
+            var disable_toggle = true;
         } else {
-            var disabled_boolean = '0';
+            var disable_toggle = false;
         }
         $.ajax({
             url: '/buttons/update_local/',
             type: "POST",
-            data: {'g_id':groupId, 'p_id': person.pk, "disabled_boolean": disabled_boolean},
+            data: {'g_id': groupId, 'p_id': person.pk, "disable": disable_toggle},
             success: function (json) {
                 that.loadResponsesFromServer()
             },
@@ -56,15 +56,10 @@ var GroupTable = React.createClass({
         var currentState = person.disabled_entirely;
           this.state.data[this.state.data.indexOf(person)].disabled_entirely = !currentState
         this.setState({date: this.state.data});
-        if (currentState) {
-            var disabled_boolean = '0';
-        } else {
-            var disabled_boolean = '1';
-        }
         $.ajax({
             url: '/buttons/update_global/',
             type: "POST",
-            data: {'p_id': person.pk, "disabled_boolean": disabled_boolean},
+            data: {'p_id': person.pk, "disable": !currentState},
             success: function (json) {
                 that.loadResponsesFromServer()
             },
