@@ -54,7 +54,7 @@ def pull_down_people():
     if resp['status'] != 'ok':
         return
     data = resp['people']
-    num_synced += data["on_this_page"]
+    num_synced = data["on_this_page"]
     page = 2
     while num_synced < data["total"]:
         more_people = e_api._POST("people/getAll", fields=custom_fields, page=page)
