@@ -28,7 +28,7 @@ kombu==3.0.26
 logilab-common==0.63.2
 natsort==4.0.1
 oauthlib==0.7.2
-opbeat==2.1.1
+opbeat==3.0
 pep8==1.6.2
 pies==2.6.5
 pies2overrides==2.6.5
