@@ -54,14 +54,14 @@ def pull_down_people():
     if resp['status'] != 'ok':
         return
     data = resp['people']
-	num_synced += data[‘on_this_page’]
-	page = 1
-	while num_synced < data[‘total’]:
-		more_people = e_api._POST(“people/getAll”, fields=custom_fields, page=page)
-		for person in more_people[‘people’][‘person’]:
-			data[‘people’].append(person)
-		num_synced += more_people[‘people’][‘on_this_page’]
-		page += 1
+    num_synced += data[‘on_this_page’]
+    page = 2
+    while num_synced < data[‘total’]:
+	more_people = e_api._POST(“people/getAll”, fields=custom_fields, page=page)
+	for person in more_people[‘people’][‘person’]:
+            data[‘people’].append(person)
+            num_synced += more_people[‘people’][‘on_this_page’]
+	page += 1
     for e_prsn in data['person']:
         prsn, created = ElvantoPerson.objects.get_or_create(e_id=e_prsn['id'])
         prsn.email = extract_email(e_prsn)
