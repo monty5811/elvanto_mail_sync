@@ -29,4 +29,7 @@ This app should run comfortably on Heroku's free tier providing you do not sync 
 ## Limitations
 
  - Roles on the mailing lists are not yet supported - coming soon!
- - If you have more than 1000 people in Elvanto only the first 1000 will be synced, this will also be fixed soon!
+
+## Contributing
+
+We welcome contributions. However, to make things as easy as possible, please fork this repo and then create a new feature branch and work in that - it makes things far [easier](http://codeinthehole.com/writing/pull-requests-and-other-good-practices-for-teams-using-github/).
