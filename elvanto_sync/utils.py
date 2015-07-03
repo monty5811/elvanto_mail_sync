@@ -14,7 +14,7 @@ def clean_emails(elvanto_emails=(), google_emails=()):
     return emails
 
 
-def retry_request(url, http_method, params=None, data=None, headers=None):
+def retry_request(url, http_method, params=None, data=None, json=None, headers=None, auth=None):
     assert http_method in ['get', 'post', 'delete', 'patch', 'put']
     MAX_TRIES = 3
 
@@ -23,8 +23,12 @@ def retry_request(url, http_method, params=None, data=None, headers=None):
         r_kwargs['params'] = params
     if data is not None:
         r_kwargs['data'] = data
+    if json is not None:
+        r_kwargs['json'] = json
     if headers is not None:
         r_kwargs['headers'] = headers
+    if auth is not None:
+        r_kwargs['auth'] = auth
 
     r_func = getattr(requests, http_method)
 

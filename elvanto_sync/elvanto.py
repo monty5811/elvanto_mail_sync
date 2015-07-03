@@ -1,15 +1,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import ElvantoAPI
+import json
+
 from django.conf import settings
 from django.utils import timezone
 
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
+from elvanto_sync.utils import retry_request
 
 
-def elvanto():
-    return ElvantoAPI.Connection(APIKey=settings.ELVANTO_KEY)
+class ElvantoApiException(Exception):
+        pass
+
+
+def e_api(end_point, **kwargs):
+    base_url = 'https://api.elvanto.com/v1/'
+    e_url = '{0}{1}.json'.format(base_url, end_point)
+    resp = retry_request(e_url, 'post',
+                         json=kwargs,
+                         auth=(settings.ELVANTO_KEY, '_'))
+    data = json.loads(resp.text)
+    if data['status'] == 'ok':
+        return data
+    else:
+        raise ElvantoApiException(data['error'])
 
 
 def extract_email(e_prsn):
@@ -27,15 +42,13 @@ def pull_down_groups():
     """
     Pull all elvanto groups and create entries in local db.
     """
-    e_api = elvanto()
-    data = e_api._Post("groups/getAll")
-    if data['status'] == 'ok':
-        for e_grp in data['groups']['group']:
-            grp, created = ElvantoGroup.objects.get_or_create(e_id=e_grp['id'])
-            grp.name = e_grp['name'].encode('utf-8', 'replace').strip()
-            # grp.group_members.clear()
-            grp.last_pulled = timezone.now()
-            grp.save()
+    data = e_api("groups/getAll")
+    for e_grp in data['groups']['group']:
+        grp, created = ElvantoGroup.objects.get_or_create(e_id=e_grp['id'])
+        grp.name = e_grp['name'].encode('utf-8', 'replace').strip()
+        # grp.group_members.clear()
+        grp.last_pulled = timezone.now()
+        grp.save()
 
 
 def pull_down_people():
@@ -43,32 +56,30 @@ def pull_down_people():
     Pull all elvanto people into db, then pull down groups to add people.
     Then iterate through them to add them to the correct groups
     """
-    e_api = elvanto()
     if len(settings.EMAIL_OVERRIDE_FIELD_ID) > 0:
         custom_field = 'custom_{0}'.format(settings.EMAIL_OVERRIDE_FIELD_ID)
         custom_fields = [custom_field]
     else:
         custom_fields = []
 
-    resp = e_api._Post("people/getAll",
-                       fields=custom_fields,
-                       page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE)
-    if resp['status'] != 'ok':
-        return
+    data = e_api("people/getAll",
+                 fields=custom_fields,
+                 page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE)
 
-    data = resp['people']
-    num_synced = data["on_this_page"]
+    people = data['people']
+    num_synced = people["on_this_page"]
     page = 2
-    while num_synced < data["total"]:
-        more_people = e_api._Post("people/getAll",
-                                  fields=custom_fields,
-                                  page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE,
-                                  page=page)
-        for person in more_people["people"]["person"]:
-            data["person"].append(person)
-        num_synced += more_people["people"]["on_this_page"]
+    while num_synced < people["total"]:
+        more_data = e_api("people/getAll",
+                          fields=custom_fields,
+                          page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE,
+                          page=page)
+        for person in more_data["people"]["person"]:
+            people["person"].append(person)
+        num_synced += more_data["people"]["on_this_page"]
         page += 1
-    for e_prsn in data['person']:
+
+    for e_prsn in people['person']:
         prsn, created = ElvantoPerson.objects.get_or_create(e_id=e_prsn['id'])
         prsn.email = extract_email(e_prsn)
         prsn.first_name = e_prsn['firstname'].strip()
@@ -80,11 +91,10 @@ def pull_down_people():
 def populate_groups():
     """
     """
-    e_api = elvanto()
     for grp in ElvantoGroup.objects.all():
         grp.group_members.clear()
-        data = e_api._Post("groups/getInfo", id=grp.e_id, fields=['people'])
-        if data['status'] == 'ok' and len(data['group'][0]['people']) > 0:
+        data = e_api("groups/getInfo", id=str(grp.e_id), fields=['people'])
+        if len(data['group'][0]['people']) > 0:
             for x in data['group'][0]['people']['person']:
                 prsn = ElvantoPerson.objects.get(e_id=x['id'])
                 prsn.elvanto_groups.add(grp)
