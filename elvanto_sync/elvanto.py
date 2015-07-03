@@ -11,7 +11,7 @@ from elvanto_sync.utils import retry_request
 
 
 class ElvantoApiException(Exception):
-        pass
+    pass
 
 
 def e_api(end_point, **kwargs):
