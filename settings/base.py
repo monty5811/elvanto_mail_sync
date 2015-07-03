@@ -84,6 +84,7 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 # Elvanto
 ELVANTO_KEY = os.environ.get('ELVANTO_KEY', '')
 EMAIL_OVERRIDE_FIELD_ID = os.environ.get('ELVANTO_OVERRIDE_FILED_ID', '')
+ELVANTO_PEOPLE_PAGE_SIZE = 1000  # must be 10 or larger
 
 # social login settings
 SOCIAL_AUTH_URL_NAMESPACE = 'social'

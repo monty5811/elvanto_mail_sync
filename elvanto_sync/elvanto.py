@@ -50,16 +50,22 @@ def pull_down_people():
     else:
         custom_fields = []
 
-    resp = e_api._Post("people/getAll", fields=custom_fields)
+    resp = e_api._Post("people/getAll",
+                       fields=custom_fields,
+                       page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE)
     if resp['status'] != 'ok':
         return
+
     data = resp['people']
     num_synced = data["on_this_page"]
     page = 2
     while num_synced < data["total"]:
-        more_people = e_api._POST("people/getAll", fields=custom_fields, page=page)
+        more_people = e_api._Post("people/getAll",
+                                  fields=custom_fields,
+                                  page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE,
+                                  page=page)
         for person in more_people["people"]["person"]:
-            data["people"]["person"].append(person)
+            data["person"].append(person)
         num_synced += more_people["people"]["on_this_page"]
         page += 1
     for e_prsn in data['person']:
