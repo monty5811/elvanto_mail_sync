@@ -1,5 +1,5 @@
 # Elvanto --> Google Mailing List Sync
-[![Circle CI](https://circleci.com/gh/monty5811/elvanto_mail_sync.svg?style=svg)](https://circleci.com/gh/monty5811/elvanto_mail_sync) [![codecov.io](http://codecov.io/github/monty5811/elvanto_mail_sync/coverage.svg?branch=master)](http://codecov.io/github/monty5811/elvanto_mail_sync?branch=master) [![Code Issues](http://www.quantifiedcode.com/api/v1/project/b97df657d68d46e9805d486bcac9e12d/badge.svg)](http://www.quantifiedcode.com/app/project/b97df657d68d46e9805d486bcac9e12d)
+[![Circle CI](https://circleci.com/gh/monty5811/elvanto_mail_sync.svg?style=svg)](https://circleci.com/gh/monty5811/elvanto_mail_sync) [![Codacy Badge](https://api.codacy.com/project/badge/f99b39d4e6c14d59adefb9f5aaadfc3c)](https://www.codacy.com/app/montgomery-dean97/elvanto_mail_sync) [![codecov.io](http://codecov.io/github/monty5811/elvanto_mail_sync/coverage.svg?branch=master)](http://codecov.io/github/monty5811/elvanto_mail_sync?branch=master) [![Code Issues](http://www.quantifiedcode.com/api/v1/project/b97df657d68d46e9805d486bcac9e12d/badge.svg)](http://www.quantifiedcode.com/app/project/b97df657d68d46e9805d486bcac9e12d)
 
 Small webapp to sync Elvanto group members to mailing lists run on a Google
 apps domain.

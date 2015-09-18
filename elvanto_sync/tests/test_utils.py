@@ -16,9 +16,9 @@ def test_clean_emails(email_set1, email_set2):
 
 def test_retry_request200():
     r = utils.retry_request('http://www.example.com/', 'get')
-    r.status_code == 200
+    assert r.status_code == 200
 
 
 def test_retry_request404():
     r = utils.retry_request('http://www.github.com/monty5811/DoesNotExist', 'get')
-    r.status_code == 404
+    assert r.status_code == 404
