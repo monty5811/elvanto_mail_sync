@@ -32,6 +32,7 @@ class ElvantoGroupSerializer(serializers.ModelSerializer):
         model = ElvantoGroup
         fields = ('e_id', 'name', 'google_email',
                   'pk',
+                  'push_auto',
                   "last_pushed", "last_pulled",
                   'total_disabled_people_in_group', 'total_people_in_group',
                   'url'

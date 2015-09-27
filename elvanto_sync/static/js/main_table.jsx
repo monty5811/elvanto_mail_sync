@@ -1,5 +1,6 @@
 var GroupRow = React.createClass({
     render: function () {
+      if (this.props.group.push_auto) { 
         return (
             <tr>
                 <td><a href={this.props.group.url}>{this.props.group.name}</a></td>
@@ -8,8 +9,22 @@ var GroupRow = React.createClass({
                 <td>{this.props.group.last_pushed}</td>
                 <td>{this.props.group.total_people_in_group}</td>
                 <td>{this.props.group.total_disabled_people_in_group}</td>
+                <td><span className="label label-info">Syncing</span></td>
             </tr>
         )
+      } else { 
+        return (
+            <tr>
+                <td><a href={this.props.group.url}>{this.props.group.name}</a></td>
+                <td>{this.props.group.google_email}</td>
+                <td>{this.props.group.last_pulled}</td>
+                <td>{this.props.group.last_pushed}</td>
+                <td>{this.props.group.total_people_in_group}</td>
+                <td>{this.props.group.total_disabled_people_in_group}</td>
+                <td></td>
+            </tr>
+        )
+      }
     }
 });
 
@@ -51,6 +66,7 @@ var AllGroupsTable = React.createClass({
             <th>Last Push</th>
             <th>Total # Ppl</th>
             <th># Excluded Ppl</th>
+            <th>Auto?</th>
             </tr>
             </thead>
             <tbody className="searchable">

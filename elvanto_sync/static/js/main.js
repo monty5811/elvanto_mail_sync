@@ -1,32 +1,34 @@
+'use strict';
+
 function push_or_pull(img_, url_) {
     var original_html = $('#buttons-all').html();
-    $('#buttons-all').html('<img height="15" src="'+img_+'">');
+    $('#buttons-all').html('<img height="15" src="' + img_ + '">');
     $.ajax({
-            url : url_,
-            type : "POST",
-            data : {'method':''},
-            success : function(json) {
-                $('#buttons-all').html('<p>Your request is being processed, this may take a couple of minutes, please be patient.</p>');
-            },
-            error : function(xhr,errmsg,err) {
-                console.log(xhr.status + ": " + xhr.responseText);
-            }
-        });
+        url: url_,
+        type: "POST",
+        data: { 'method': '' },
+        success: function success(json) {
+            $('#buttons-all').html('<p>Your request is being processed, this may take a couple of minutes, please be patient.</p>');
+        },
+        error: function error(xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
 };
 function push_grp(img_, url_, g_id) {
     var original_html = $('#buttons-all').html();
-    $('#buttons-all').html('<img height="15" src="'+img_+'">');
+    $('#buttons-all').html('<img height="15" src="' + img_ + '">');
     $.ajax({
-            url : url_,
-            type : "POST",
-            data : {'g_id':g_id},
-            success : function(json) {
-                $('#buttons-all').html('<p>Your request is being processed, this may take a couple of minutes, please be patient.</p>');
-            },
-            error : function(xhr,errmsg,err) {
-                console.log(xhr.status + ": " + xhr.responseText);
-            }
-        });
+        url: url_,
+        type: "POST",
+        data: { 'g_id': g_id },
+        success: function success(json) {
+            $('#buttons-all').html('<p>Your request is being processed, this may take a couple of minutes, please be patient.</p>');
+        },
+        error: function error(xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
 };
 // This function gets cookie with a given name
 function getCookie(name) {
@@ -36,7 +38,7 @@ function getCookie(name) {
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
             // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+            if (cookie.substring(0, name.length + 1) == name + '=') {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
             }
@@ -52,7 +54,8 @@ The functions below will create a header with csrftoken
 
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method)
+    );
 }
 function sameOrigin(url) {
     // test that a given url is a same-origin URL
@@ -62,14 +65,13 @@ function sameOrigin(url) {
     var sr_origin = '//' + host;
     var origin = protocol + sr_origin;
     // Allow absolute or scheme relative URLs to same origin
-    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-        // or any other URL that isn't scheme relative or absolute i.e relative.
-        !(/^(\/\/|http:|https:).*/.test(url));
+    return url == origin || url.slice(0, origin.length + 1) == origin + '/' || (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+    // or any other URL that isn't scheme relative or absolute i.e relative.
+    !/^(\/\/|http:|https:).*/.test(url);
 }
 
 $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
+    beforeSend: function beforeSend(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
             // Send the token to same-origin, relative URLs only.
             // Send the token only if the method warrants CSRF protection

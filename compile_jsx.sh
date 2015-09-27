@@ -1,1 +1,1 @@
-jsx -x jsx elvanto_sync/static/js elvanto_sync/static/js
+babel elvanto_sync/static/js --out-dir elvanto_sync/static/js
