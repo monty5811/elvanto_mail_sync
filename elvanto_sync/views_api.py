@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.views import APIView
 
 from elvanto_sync.models import ElvantoPerson
@@ -9,7 +9,7 @@ from elvanto_sync.serializers import ElvantoPersonSerializer
 
 
 class ApiCollection(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
     model_class = None
     serializer_class = None
 
@@ -20,7 +20,7 @@ class ApiCollection(APIView):
 
 
 class ApiMember(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
     model_class = None
     serializer_class = None
 
@@ -29,9 +29,17 @@ class ApiMember(APIView):
         serializer = self.serializer_class(obj)
         return Response(serializer.data)
 
+    def post(self, request, format=None, **kwargs):
+        obj = get_object_or_404(self.model_class, pk=kwargs['pk'])
+        serializer = self.serializer_class(obj, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ApiCollectionGroupPeople(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def get(self, request, format=None, **kwargs):
         # filter by group:

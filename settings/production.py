@@ -19,9 +19,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
 # OPBEAT
-INSTALLED_APPS += [
-    "opbeat.contrib.django",
-]
+INSTALLED_APPS += ["opbeat.contrib.django", ]
 
 OPBEAT = {
     "ORGANIZATION_ID": os.environ.get('OPBEAT_ORG_ID', ''),
@@ -35,22 +33,46 @@ MIDDLEWARE_CLASSES = [
 ] + MIDDLEWARE_CLASSES
 
 LOGGING = {
-    "version": 1,
-    # Don't throw away default loggers.
-    "disable_existing_loggers": False,
-    "handlers": {
-        # Redefine console logger to run in production.
-        "console": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format':
+            '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
     },
-    "loggers": {
-        # Redefine django logger to use redefined console logging.
-        "django": {
-            "handlers": ["console"],
+    'handlers': {
+        'opbeat': {
+            'level': 'WARNING',
+            'class': 'opbeat.contrib.django.handlers.OpbeatHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         }
-    }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'elvanto_sync': {
+            'level': 'INFO',
+            'handlers': [
+                'opbeat',
+                'console',
+            ],
+            'propagate': False,
+        },
+        # Log errors from the Opbeat module to the console (recommended)
+        'opbeat.errors': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
 }
 
 # Security:

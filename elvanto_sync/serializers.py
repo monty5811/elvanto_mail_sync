@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from rest_framework import serializers
 
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
@@ -13,27 +12,38 @@ class ElvantoPersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ElvantoPerson
-        fields = ('e_id', 'full_name',
-                  'email', 'first_name', 'last_name',
-                  'pk',
-                  'disabled_entirely',
-                  'disabled_groups',
-                  )
+        fields = (
+            'full_name',
+            'email',
+            'pk',
+            'disabled_entirely',
+            'disabled_groups',
+        )
 
 
 class ElvantoGroupSerializer(serializers.ModelSerializer):
-    url = serializers.CharField(source='get_absolute_url')
-    total_disabled_people_in_group = serializers.IntegerField()
-    total_people_in_group = serializers.IntegerField()
-    last_pulled = serializers.DateTimeField(format='%d %b %H:%M')
-    last_pushed = serializers.DateTimeField(format='%d %b %H:%M')
+    total_disabled_people_in_group = serializers.IntegerField(required=False)
+    last_pulled = serializers.DateTimeField(
+        format='%d %b %H:%M', required=False
+    )
+    last_pushed = serializers.DateTimeField(
+        format='%d %b %H:%M', required=False
+    )
+    name = serializers.CharField(required=False)
+    people_pks = serializers.ReadOnlyField(
+       source='group_member_pks'
+    )
+    push_auto = serializers.BooleanField(required=False)
 
     class Meta:
         model = ElvantoGroup
-        fields = ('e_id', 'name', 'google_email',
-                  'pk',
-                  'push_auto',
-                  "last_pushed", "last_pulled",
-                  'total_disabled_people_in_group', 'total_people_in_group',
-                  'url'
-                  )
+        fields = (
+            'name',
+            'google_email',
+            'pk',
+            'push_auto',
+            "last_pushed",
+            "last_pulled",
+            'total_disabled_people_in_group',
+            'people_pks',
+        )

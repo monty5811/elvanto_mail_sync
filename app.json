@@ -46,6 +46,50 @@
       "description": "Comma separated list of emails that can access the app",
       "value": ""
     },
+    "G_DELEGATED_USER": {
+        "description": "We need to impersonate a user in the domain.",
+        "value": ""
+    },
+    "G_TYPE": {
+      "description": "Type from service key file.",
+      "value": ""
+    },
+    "G_PROJECT_ID": {
+      "description": "Project ID from service key file.",
+      "value": ""
+    },
+    "G_PRIVATE_KEY_ID": {
+      "description": "Private key ID from service key file.",
+      "value": ""
+    },
+    "G_PRIVATE_KEY": {
+      "description": "Private key from service key file.",
+      "value": ""
+    },
+    "G_CLIENT_EMAIL": {
+      "description": "Client email from service key file.",
+      "value": ""
+    },
+    "G_CLIENT_ID": {
+      "description": "Client ID from service key file.",
+      "value": ""
+    },
+    "G_AUTH_URI": {
+      "description": "Auth URI from service key file.",
+      "value": ""
+    },
+    "G_TOKEN_URI": {
+      "description": "Token URI from service key file.",
+      "value": ""
+    },
+    "G_AUTH_PROVIDER_X509_CERT_URL": {
+      "description": "auth_provider_x509_cert_url from service key file.",
+      "value": ""
+    },
+    "G_CLIENT_X509_CERT_URL": {
+      "description": "client_x509_cert_url from service key file.",
+      "value": ""
+    },
     "OPBEAT_APP_ID": {
       "value": "",
       "required": false

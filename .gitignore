@@ -8,3 +8,8 @@ venv*/
 .cache/
 .coverage
 .module-cache/
+*.map
+elm-stuff/
+node_modules/
+.tox/
+*.log

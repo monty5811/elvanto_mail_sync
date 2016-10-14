@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 WSGI config for elvanto_sync project.
 

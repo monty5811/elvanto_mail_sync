@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytest
 from django.core.management import call_command
 
@@ -11,21 +10,31 @@ from elvanto_sync.models import ElvantoGroup, ElvantoPerson
 class TestElvanto():
     def test_pull_groups(self):
         elvanto.pull_down_groups()
-        grp = ElvantoGroup.objects.get(e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7')
+        grp = ElvantoGroup.objects.get(
+            e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7'
+        )
         assert str(grp) == 'All'
 
     def test_pull_people(self):
         elvanto.pull_down_people()
-        calvin = ElvantoPerson.objects.get(e_id='f7cfa258-d3c6-11e4-95ba-068b656294b7')
+        calvin = ElvantoPerson.objects.get(
+            e_id='f7cfa258-d3c6-11e4-95ba-068b656294b7'
+        )
         assert str(calvin) == 'John Calvin'
         assert calvin.email == 'john.calvin@geneva.com'
-        chalmers = ElvantoPerson.objects.get(e_id='5a0a1cbc-d3c7-11e4-95ba-068b656294b7')
+        chalmers = ElvantoPerson.objects.get(
+            e_id='5a0a1cbc-d3c7-11e4-95ba-068b656294b7'
+        )
         assert str(chalmers) == 'Thomas Chalmers'
         assert chalmers.email == 'thomas.chalmers@edinburgh.com'
-        knox = ElvantoPerson.objects.get(e_id='c1136264-d3c7-11e4-95ba-068b656294b7')
+        knox = ElvantoPerson.objects.get(
+            e_id='c1136264-d3c7-11e4-95ba-068b656294b7'
+        )
         assert str(knox) == 'John Knox'
         assert knox.email == ''
-        owen = ElvantoPerson.objects.get(e_id='48366137-d3c7-11e4-95ba-068b656294b7')
+        owen = ElvantoPerson.objects.get(
+            e_id='48366137-d3c7-11e4-95ba-068b656294b7'
+        )
         assert str(owen) == 'John Owen'
         assert owen.email == 'john.owen@cambridge.com'
 
@@ -33,7 +42,9 @@ class TestElvanto():
         elvanto.pull_down_groups()
         elvanto.pull_down_people()
         elvanto.populate_groups()
-        grp_all = ElvantoGroup.objects.get(e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7')
+        grp_all = ElvantoGroup.objects.get(
+            e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7'
+        )
         e_emails = grp_all.elvanto_emails()
         assert 'john.calvin@geneva.com' in e_emails
         assert 'john.owen@cambridge.com' in e_emails

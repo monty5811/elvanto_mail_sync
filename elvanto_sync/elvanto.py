@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import print_function
 
 import json
@@ -17,9 +16,9 @@ class ElvantoApiException(Exception):
 def e_api(end_point, **kwargs):
     base_url = 'https://api.elvanto.com/v1/'
     e_url = '{0}{1}.json'.format(base_url, end_point)
-    resp = retry_request(e_url, 'post',
-                         json=kwargs,
-                         auth=(settings.ELVANTO_KEY, '_'))
+    resp = retry_request(
+        e_url, 'post', json=kwargs, auth=(settings.ELVANTO_KEY, '_')
+    )
     data = json.loads(resp.text)
     if data['status'] == 'ok':
         return data
@@ -62,18 +61,22 @@ def pull_down_people():
     else:
         custom_fields = []
 
-    data = e_api("people/getAll",
-                 fields=custom_fields,
-                 page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE)
+    data = e_api(
+        "people/getAll",
+        fields=custom_fields,
+        page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE
+    )
 
     people = data['people']
     num_synced = people["on_this_page"]
     page = 2
     while num_synced < people["total"]:
-        more_data = e_api("people/getAll",
-                          fields=custom_fields,
-                          page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE,
-                          page=page)
+        more_data = e_api(
+            "people/getAll",
+            fields=custom_fields,
+            page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE,
+            page=page
+        )
         for person in more_data["people"]["person"]:
             people["person"].append(person)
         num_synced += more_data["people"]["on_this_page"]
@@ -93,7 +96,12 @@ def populate_groups():
     """
     for grp in ElvantoGroup.objects.all():
         grp.group_members.clear()
-        data = e_api("groups/getInfo", id=str(grp.e_id), fields=['people'])
+        try:
+            data = e_api("groups/getInfo", id=str(grp.e_id), fields=['people'])
+        except Exception as e:
+            print('[Failed] Issue with Group: {name}'.format(name=grp.name))
+            print(e)
+            continue
         if len(data['group'][0]['people']) > 0:
             for x in data['group'][0]['people']['person']:
                 prsn = ElvantoPerson.objects.get(e_id=x['id'])

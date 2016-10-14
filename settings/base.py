@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -75,9 +74,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, '..', 'elvanto_sync', 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, '..', 'elvanto_sync', 'static'), )
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
@@ -98,11 +95,18 @@ LOGIN_ERROR_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
 # Google auth credentials
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', '')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', '')
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS', '').replace('  ', '').split(',')
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS', '').replace(' ', '').split(',')
-
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', ''
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', ''
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS', ''
+).replace('  ', '').split(',')
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS', ''
+).replace(' ', '').split(',')
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/admin.directory.group.member',
@@ -112,3 +116,22 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline',
     'approval_prompt': 'auto',
 }
+
+# Use a service key to access Google apis:
+# see http://gspread.readthedocs.io/en/latest/oauth2.html for help
+# you need to download the json file and then copy the entries into the heroku
+# settings
+GOOGLE_KEYFILE_DICT = {
+    'type': os.environ['G_TYPE'],
+    'project_id': os.environ['G_PROJECT_ID'],
+    'private_key_id': os.environ['G_PRIVATE_KEY_ID'],
+    'private_key': os.environ['G_PRIVATE_KEY'],
+    'client_email': os.environ['G_CLIENT_EMAIL'],
+    'client_id': os.environ['G_CLIENT_ID'],
+    'auth_uri': os.environ['G_AUTH_URI'],
+    'token_uri': os.environ['G_TOKEN_URI'],
+    'auth_provider_x509_cert_url': os.environ['G_AUTH_PROVIDER_X509_CERT_URL'],
+    'client_x509_cert_url': os.environ['G_CLIENT_X509_CERT_URL'],
+}
+
+G_DELEGATED_USER = os.environ.get('G_DELEGATED_USER')

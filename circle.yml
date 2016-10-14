@@ -4,10 +4,10 @@ machine:
     version: 3.4.2
 dependencies:
     override:
-        - pip install -r requirements.txt
+        - pip install tox
 test:
   override:
-    - py.test elvanto_sync --cov="elvanto_sync/" --cov-report="html" --flakes --isort --pep8 --junitxml="$CIRCLE_TEST_REPORTS/junit.xml"
+    - tox -e py34
   post:
     - sudo pip install codecov
     - codecov --token="6cbdeaaa-7955-47f3-bb1b-276e88258109"
