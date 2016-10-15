@@ -1,8 +1,10 @@
+import json
 import pytest
 from django.core.urlresolvers import reverse
 
 from elvanto_sync.elvanto import refresh_elvanto_data
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
+from elvanto_sync.tests.conftest import elvanto_vcr
 
 
 @pytest.mark.django_db
@@ -16,8 +18,6 @@ class TestUrls():
     @pytest.mark.parametrize(
         "url,status_code", [
             (reverse('index'), 200),
-            (reverse('api_groups'), 200),
-            (reverse('api_persons'), 200),
         ]
     )
     def test_logged_in(self, url, status_code, clients):
@@ -26,56 +26,22 @@ class TestUrls():
     @pytest.mark.parametrize(
         "url,status_code", [
             (reverse(
-                'group', kwargs={'pk': 1}
+                'api_groups'
+            ), 200),
+            (reverse(
+                'api_people'
             ), 200),
             (reverse(
                 'api_person', kwargs={'pk': 1}
             ), 200),
-            (reverse(
-                'api_group_people', kwargs={'pk': 1}
-            ), 200),
         ]
     )
-    @pytest.mark.slowtest
+    @elvanto_vcr
     def test_logged_in_db(self, url, status_code, clients):
         refresh_elvanto_data()
         assert clients['c_in'].get(url).status_code == status_code
 
-    @pytest.mark.slowtest
-    def test_post_to_group(self, clients):
-        pk_ = 1
-        refresh_elvanto_data()
-        post_data = {
-            'google_email': 'test@example.com',
-            'push_auto': False,
-        }
-        resp = clients['c_in'].post(
-            reverse(
-                'group', kwargs={'pk': pk_}
-            ), post_data
-        )
-        assert resp.status_code == 302
-        assert resp.url.endswith(reverse('group', kwargs={'pk': pk_}))
-        assert ElvantoGroup.objects.get(
-            pk=pk_
-        ).google_email == 'test@example.com'
-
-        post_data_invalid = {
-            'google_email': 'not_an_email',
-            'push_auto': True,
-        }
-        resp = clients['c_in'].post(
-            reverse(
-                'group', kwargs={'pk': pk_}
-            ), post_data_invalid
-        )
-        assert resp.status_code == 200
-        assert ElvantoGroup.objects.get(
-            pk=pk_
-        ).google_email == 'test@example.com'
-        assert ElvantoGroup.objects.get(pk=pk_).push_auto is False
-
-    @pytest.mark.slowtest
+    @elvanto_vcr
     def test_button_pull_all(self, clients):
         post_data = {}
         resp = clients['c_in'].post(reverse('button_pull_all'), post_data)
@@ -101,7 +67,7 @@ class TestUrls():
         assert str(owen) == 'John Owen'
         assert owen.email == 'john.owen@cambridge.com'
 
-    @pytest.mark.slowtest
+    @elvanto_vcr
     def test_button_update_global(self, clients):
         refresh_elvanto_data()
         # ensure Calvin is enabled
@@ -110,19 +76,19 @@ class TestUrls():
         )
         assert not calvin.disabled_entirely
         # disable calvin
-        post_data = {'p_id': calvin.pk, 'disable': 'true'}
-        resp = clients['c_in'].post(reverse('button_update_global'), post_data)
+        post_data = {'pk': calvin.pk, 'disable': True}
+        resp = clients['c_in'].generic('POST', reverse('button_update_global'), json.dumps(post_data))
         assert resp.status_code == 200
         calvin.refresh_from_db()
         assert calvin.disabled_entirely
         # re-enable him again
-        post_data = {'p_id': calvin.pk, 'disable': 'false'}
-        resp = clients['c_in'].post(reverse('button_update_global'), post_data)
+        post_data = {'pk': calvin.pk, 'disable': False}
+        resp = clients['c_in'].generic('POST', reverse('button_update_global'), json.dumps(post_data))
         assert resp.status_code == 200
         calvin.refresh_from_db()
         assert not calvin.disabled_entirely
 
-    @pytest.mark.slowtest
+    @elvanto_vcr
     def test_button_update_local(self, clients):
         refresh_elvanto_data()
         # ensure Calvin is enabled in Geneva
@@ -135,9 +101,9 @@ class TestUrls():
         post_data = {
             'p_id': calvin.pk,
             'g_id': geneva_grp.pk,
-            'disable': 'false'
+            'disable': False,
         }
-        resp = clients['c_in'].post(reverse('button_update_local'), post_data)
+        resp = clients['c_in'].generic('POST', reverse('button_update_local'), json.dumps(post_data))
         assert resp.status_code == 200
         geneva_grp.refresh_from_db()
         assert geneva_grp in calvin.disabled_groups.all()
@@ -145,9 +111,9 @@ class TestUrls():
         post_data = {
             'p_id': calvin.pk,
             'g_id': geneva_grp.pk,
-            'disable': 'true'
+            'disable': True,
         }
-        resp = clients['c_in'].post(reverse('button_update_local'), post_data)
+        resp = clients['c_in'].generic('POST', reverse('button_update_local'), json.dumps(post_data))
         assert resp.status_code == 200
         geneva_grp.refresh_from_db()
         assert geneva_grp not in calvin.disabled_groups.all()

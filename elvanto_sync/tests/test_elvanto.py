@@ -1,13 +1,15 @@
 import pytest
+import vcr
 from django.core.management import call_command
 
 from elvanto_sync import elvanto
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
+from elvanto_sync.tests.conftest import elvanto_vcr
 
 
-@pytest.mark.slowtest
 @pytest.mark.django_db
 class TestElvanto():
+    @elvanto_vcr
     def test_pull_groups(self):
         elvanto.pull_down_groups()
         grp = ElvantoGroup.objects.get(
@@ -15,6 +17,7 @@ class TestElvanto():
         )
         assert str(grp) == 'All'
 
+    @elvanto_vcr
     def test_pull_people(self):
         elvanto.pull_down_people()
         calvin = ElvantoPerson.objects.get(
@@ -38,6 +41,7 @@ class TestElvanto():
         assert str(owen) == 'John Owen'
         assert owen.email == 'john.owen@cambridge.com'
 
+    @elvanto_vcr
     def test_pop_groups(self):
         elvanto.pull_down_groups()
         elvanto.pull_down_people()
@@ -54,8 +58,10 @@ class TestElvanto():
         assert len(grp_all.group_members_entirely_disabled()) == 0
         assert grp_all.total_disabled_people_in_group() == 0
 
+    @elvanto_vcr
     def test_refresh_data(self):
         elvanto.refresh_elvanto_data()
 
+    @elvanto_vcr
     def refresh_pull_management_command(self):
         call_command('pull_from_elvanto')

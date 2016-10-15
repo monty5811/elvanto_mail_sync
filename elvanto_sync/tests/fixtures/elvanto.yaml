@@ -1,0 +1,218 @@
+interactions:
+- request:
+    body: '{}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['2']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/groups/getAll.json
+  response:
+    body: {string: '{"generated_in":"0.065","status":"ok","groups":{"on_this_page":5,"page":1,"per_page":1000,"total":5,"group":[{"date_added":"2015-03-26
+        14:34:49","date_modified":"","name":"Geneva","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"41dd51d9-d3c5-11e4-95ba-068b656294b7"},{"date_added":"2015-03-26
+        14:35:04","date_modified":"","name":"England","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"4ad1c22b-d3c5-11e4-95ba-068b656294b7"},{"date_added":"2015-03-26
+        14:35:13","date_modified":"","name":"Scotland","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"50343ad0-d3c5-11e4-95ba-068b656294b7"},{"date_added":"2015-03-26
+        14:35:20","date_modified":"","name":"Empty","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"549f2473-d3c5-11e4-95ba-068b656294b7"},{"date_added":"2015-03-26
+        14:50:50","date_modified":"","name":"All","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"7ebd2605-d3c7-11e4-95ba-068b656294b7"}]}}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['1695']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:25:43 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:25:43 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:25:43
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"page_size": 10, "fields": []}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['31']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/people/getAll.json
+  response:
+    body: {string: '{"generated_in":"0.007","status":"ok","people":{"on_this_page":10,"page":1,"per_page":"10","total":11,"person":[{"id":"0208f2e8-2165-11e5-95ba-068b656294b7","date_added":"2015-07-03
+        09:22:21","date_modified":"2015-07-03 09:22:21","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"Martin","preferred_name":"","middle_name":"","lastname":"Luther","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"martin.luther","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"},{"id":"21a6a7b9-2165-11e5-95ba-068b656294b7","date_added":"2015-07-03
+        09:23:14","date_modified":"2015-07-03 09:23:57","category_id":"c9b83a8c-d3c1-11e4-95ba-068b656294b7","firstname":"Thomas","preferred_name":"","middle_name":"","lastname":"Cranmer","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"thomas.cranmer","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"},{"id":"48366137-d3c7-11e4-95ba-068b656294b7","date_added":"2015-03-26
+        14:49:19","date_modified":"2015-06-25 10:08:09","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"John","preferred_name":"","middle_name":"","lastname":"Owen","email":"john.owen@cambridge.com","phone":"07902546589","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"john.owen","last_login":"","country":"","timezone":"","picture":"https:\/\/secure.gravatar.com\/avatar\/8a4f3da028ea04715162ac984204695e\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","family_id":"","family_relationship":"Other"},{"id":"5a0a1cbc-d3c7-11e4-95ba-068b656294b7","date_added":"2015-03-26
+        14:49:49","date_modified":"2015-06-25 10:08:23","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"Thomas","preferred_name":"","middle_name":"","lastname":"Chalmers","email":"thomas.chalmers@edinburgh.com","phone":"01311555555","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"thomas.chalmers","last_login":"","country":"","timezone":"","picture":"https:\/\/secure.gravatar.com\/avatar\/3ca647f1967e4ee54abe46295ec9b68c\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","family_id":"","family_relationship":"Other"},{"id":"63946093-2164-11e5-95ba-068b656294b7","date_added":"2015-07-03
+        09:17:55","date_modified":"2015-07-03 09:17:55","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"Peter","preferred_name":"","middle_name":"","lastname":"Vermigli","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"peter.vermigli","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"},{"id":"71204cab-2164-11e5-95ba-068b656294b7","date_added":"2015-07-03
+        09:18:18","date_modified":"2015-07-03 09:18:18","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"Martin","preferred_name":"","middle_name":"","lastname":"Bucer","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"martin.bucer","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"},{"id":"87d62189-2164-11e5-95ba-068b656294b7","date_added":"2015-07-03
+        09:18:56","date_modified":"2015-07-03 09:18:56","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"Johannes","preferred_name":"","middle_name":"","lastname":"Oecolampadius","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"johannes.oecolampadius","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"},{"id":"c1136264-d3c7-11e4-95ba-068b656294b7","date_added":"2015-03-26
+        14:52:41","date_modified":"2015-03-26 14:52:41","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"John","preferred_name":"","middle_name":"","lastname":"Knox","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"john.knox","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"},{"id":"c9ba0e56-d3c1-11e4-95ba-068b656294b7","date_added":"2015-03-26
+        14:09:59","date_modified":"","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"Dean","preferred_name":"","middle_name":"","lastname":"Montgomery","email":"montgomery.dean97@gmail.com","phone":"","mobile":"","admin":1,"contact":0,"archived":0,"deceased":0,"volunteer":1,"status":"Active","username":"monty5811","last_login":"2016-07-21
+        19:30:49","country":"","timezone":"","picture":"https:\/\/secure.gravatar.com\/avatar\/65d4672c0be55149ec3e855adf28cc3e\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","family_id":"","family_relationship":"Other"},{"id":"e94d6dc8-2164-11e5-95ba-068b656294b7","date_added":"2015-07-03
+        09:21:39","date_modified":"2015-07-03 09:21:39","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"John","preferred_name":"","middle_name":"","lastname":"Hooper","email":"","phone":"","mobile":"","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"john.hooper","last_login":"","country":"","timezone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","family_id":"","family_relationship":"Other"}]}}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['6085']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:25:46 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:25:46 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:25:46
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"page": 2, "page_size": 10, "fields": []}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['42']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/people/getAll.json
+  response:
+    body: {string: '{"generated_in":"0.012","status":"ok","people":{"on_this_page":1,"page":"2","per_page":"10","total":11,"person":[{"id":"f7cfa258-d3c6-11e4-95ba-068b656294b7","date_added":"2015-03-26
+        14:47:04","date_modified":"2015-06-25 10:07:44","category_id":"c9b61f79-d3c1-11e4-95ba-068b656294b7","firstname":"John","preferred_name":"","middle_name":"","lastname":"Calvin","email":"john.calvin@geneva.com","phone":"","mobile":"447902537509","admin":0,"contact":0,"archived":0,"deceased":0,"volunteer":0,"status":"Active","username":"john.calvin","last_login":"","country":"","timezone":"","picture":"https:\/\/secure.gravatar.com\/avatar\/2e8b7f0ae1a165857255022c32e3e061\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","family_id":"","family_relationship":"Other"}]}}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['806']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:25:49 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:25:49 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:25:49
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"fields": ["people"], "id": "7ebd2605-d3c7-11e4-95ba-068b656294b7"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['68']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/groups/getInfo.json
+  response:
+    body: {string: '{"generated_in":"0.019","status":"ok","group":[{"date_added":"2015-03-26
+        14:50:50","date_modified":"","name":"All","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"7ebd2605-d3c7-11e4-95ba-068b656294b7","people":{"person":[{"firstname":"Thomas","preferred_name":"","middle_name":"","lastname":"Chalmers","email":"thomas.chalmers@edinburgh.com","mobile":"","phone":"01311555555","picture":"https:\/\/secure.gravatar.com\/avatar\/3ca647f1967e4ee54abe46295ec9b68c\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","position":"","id":"5a0a1cbc-d3c7-11e4-95ba-068b656294b7"},{"firstname":"John","preferred_name":"","middle_name":"","lastname":"Calvin","email":"john.calvin@geneva.com","mobile":"447902537509","phone":"","picture":"https:\/\/secure.gravatar.com\/avatar\/2e8b7f0ae1a165857255022c32e3e061\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","position":"","id":"f7cfa258-d3c6-11e4-95ba-068b656294b7"},{"firstname":"John","preferred_name":"","middle_name":"","lastname":"Owen","email":"john.owen@cambridge.com","mobile":"","phone":"07902546589","picture":"https:\/\/secure.gravatar.com\/avatar\/8a4f3da028ea04715162ac984204695e\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","position":"","id":"48366137-d3c7-11e4-95ba-068b656294b7"}]}}]}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['1550']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:25:51 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:25:52 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:25:52
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"fields": ["people"], "id": "549f2473-d3c5-11e4-95ba-068b656294b7"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['68']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/groups/getInfo.json
+  response:
+    body: {string: '{"generated_in":"0.012","status":"ok","group":[{"date_added":"2015-03-26
+        14:35:20","date_modified":"","name":"Empty","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"549f2473-d3c5-11e4-95ba-068b656294b7","people":[]}]}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['376']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:25:54 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:25:54 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:25:54
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"fields": ["people"], "id": "4ad1c22b-d3c5-11e4-95ba-068b656294b7"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['68']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/groups/getInfo.json
+  response:
+    body: {string: '{"generated_in":"0.032","status":"ok","group":[{"date_added":"2015-03-26
+        14:35:04","date_modified":"","name":"England","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"4ad1c22b-d3c5-11e4-95ba-068b656294b7","people":{"person":[{"firstname":"John","preferred_name":"","middle_name":"","lastname":"Owen","email":"john.owen@cambridge.com","mobile":"","phone":"07902546589","picture":"https:\/\/secure.gravatar.com\/avatar\/8a4f3da028ea04715162ac984204695e\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","position":"","id":"48366137-d3c7-11e4-95ba-068b656294b7"}]}}]}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['772']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:25:57 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:25:57 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:25:57
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"fields": ["people"], "id": "41dd51d9-d3c5-11e4-95ba-068b656294b7"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['68']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/groups/getInfo.json
+  response:
+    body: {string: '{"generated_in":"0.015","status":"ok","group":[{"date_added":"2015-03-26
+        14:34:49","date_modified":"","name":"Geneva","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"41dd51d9-d3c5-11e4-95ba-068b656294b7","people":{"person":[{"firstname":"John","preferred_name":"","middle_name":"","lastname":"Calvin","email":"john.calvin@geneva.com","mobile":"447902537509","phone":"","picture":"https:\/\/secure.gravatar.com\/avatar\/2e8b7f0ae1a165857255022c32e3e061\/?default=https%3A%2F%2Fd3600v6qlurvk.cloudfront.net%2Fimg%2Fdefault-avatar.png&size=200&rating=G","position":"","id":"f7cfa258-d3c6-11e4-95ba-068b656294b7"}]}}]}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['773']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:26:00 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:26:00 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:26:00
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+- request:
+    body: '{"fields": ["people"], "id": "50343ad0-d3c5-11e4-95ba-068b656294b7"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['68']
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/3.5.2 Linux/4.4.0-31-generic]
+    method: POST
+    uri: https://api.elvanto.com/v1/groups/getInfo.json
+  response:
+    body: {string: '{"generated_in":"0.014","status":"ok","group":[{"date_added":"2015-03-26
+        14:35:13","date_modified":"","name":"Scotland","description":"","status":"Active","meeting_address":"","meeting_city":"","meeting_state":"","meeting_postcode":"","meeting_country":"","meeting_day":"","meeting_time":"2:00
+        AM","meeting_frequency":"","id":"50343ad0-d3c5-11e4-95ba-068b656294b7","people":{"person":[{"firstname":"John","preferred_name":"","middle_name":"","lastname":"Knox","email":"","mobile":"","phone":"","picture":"https:\/\/d3600v6qlurvk.cloudfront.net\/img\/default-avatar.png","position":"","id":"c1136264-d3c7-11e4-95ba-068b656294b7"}]}}]}'}
+    headers:
+      Connection: [keep-alive]
+      Content-Length: ['633']
+      Content-Type: [text/html; charset=UTF-8]
+      Date: ['Sat, 15 Oct 2016 07:26:02 GMT']
+      Server: [Apache]
+      Set-Cookie: ['country=GB; expires=Sat, 29-Oct-2016 07:26:03 GMT; Max-Age=1209600;
+          path=/; domain=.api.elvanto.com', 'region=gb; expires=Sat, 29-Oct-2016 07:26:03
+          GMT; Max-Age=1209600; path=/; domain=.api.elvanto.com']
+    status: {code: 200, message: OK}
+version: 1
