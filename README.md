@@ -1,6 +1,6 @@
 # Elvanto --> Google Mailing List Sync
 
-[![Circle CI](https://circleci.com/gh/monty5811/elvanto_mail_sync.svg?style=svg)](https://circleci.com/gh/monty5811/elvanto_mail_sync) [![codecov.io](http://codecov.io/github/monty5811/elvanto_mail_sync/coverage.svg?branch=master)](http://codecov.io/github/monty5811/elvanto_mail_sync?branch=master)
+[![Build Status](https://semaphoreci.com/api/v1/monty5811/elvanto_mail_sync/branches/development/badge.svg)](https://semaphoreci.com/monty5811/elvanto_mail_sync) [![Coverage Status](https://coveralls.io/repos/github/monty5811/elvanto_mail_sync/badge.svg?branch=master)](https://coveralls.io/github/monty5811/elvanto_mail_sync?branch=master)
 
 Small webapp to sync Elvanto group members to mailing lists on a Google apps domain.
 
