@@ -30,9 +30,7 @@ class ElvantoGroupSerializer(serializers.ModelSerializer):
         format='%d %b %H:%M', required=False
     )
     name = serializers.CharField(required=False)
-    people_pks = serializers.ReadOnlyField(
-       source='group_member_pks'
-    )
+    people_pks = serializers.ReadOnlyField(source='group_member_pks')
     push_auto = serializers.BooleanField(required=False)
 
     class Meta:

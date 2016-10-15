@@ -15,22 +15,14 @@ class TestUrls():
         assert resp.url.endswith("/login/google-oauth2?next=/")
         assert resp.status_code == status_code
 
-    @pytest.mark.parametrize(
-        "url,status_code", [
-            (reverse('index'), 200),
-        ]
-    )
+    @pytest.mark.parametrize("url,status_code", [(reverse('index'), 200), ])
     def test_logged_in(self, url, status_code, clients):
         assert clients['c_in'].get(url).status_code == status_code
 
     @pytest.mark.parametrize(
         "url,status_code", [
-            (reverse(
-                'api_groups'
-            ), 200),
-            (reverse(
-                'api_people'
-            ), 200),
+            (reverse('api_groups'), 200),
+            (reverse('api_people'), 200),
             (reverse(
                 'api_person', kwargs={'pk': 1}
             ), 200),
@@ -77,13 +69,17 @@ class TestUrls():
         assert not calvin.disabled_entirely
         # disable calvin
         post_data = {'pk': calvin.pk, 'disable': True}
-        resp = clients['c_in'].generic('POST', reverse('button_update_global'), json.dumps(post_data))
+        resp = clients['c_in'].generic(
+            'POST', reverse('button_update_global'), json.dumps(post_data)
+        )
         assert resp.status_code == 200
         calvin.refresh_from_db()
         assert calvin.disabled_entirely
         # re-enable him again
         post_data = {'pk': calvin.pk, 'disable': False}
-        resp = clients['c_in'].generic('POST', reverse('button_update_global'), json.dumps(post_data))
+        resp = clients['c_in'].generic(
+            'POST', reverse('button_update_global'), json.dumps(post_data)
+        )
         assert resp.status_code == 200
         calvin.refresh_from_db()
         assert not calvin.disabled_entirely
@@ -103,7 +99,9 @@ class TestUrls():
             'g_id': geneva_grp.pk,
             'disable': False,
         }
-        resp = clients['c_in'].generic('POST', reverse('button_update_local'), json.dumps(post_data))
+        resp = clients['c_in'].generic(
+            'POST', reverse('button_update_local'), json.dumps(post_data)
+        )
         assert resp.status_code == 200
         geneva_grp.refresh_from_db()
         assert geneva_grp in calvin.disabled_groups.all()
@@ -113,7 +111,9 @@ class TestUrls():
             'g_id': geneva_grp.pk,
             'disable': True,
         }
-        resp = clients['c_in'].generic('POST', reverse('button_update_local'), json.dumps(post_data))
+        resp = clients['c_in'].generic(
+            'POST', reverse('button_update_local'), json.dumps(post_data)
+        )
         assert resp.status_code == 200
         geneva_grp.refresh_from_db()
         assert geneva_grp not in calvin.disabled_groups.all()

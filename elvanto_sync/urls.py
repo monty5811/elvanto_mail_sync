@@ -13,6 +13,7 @@ from elvanto_sync.serializers import (
 
 admin.autodiscover()
 
+
 class RestrictedTemplateView(LoginRequiredMixin, TemplateView):
     pass
 
@@ -24,7 +25,9 @@ urls_basic = [
     )),
     url(
         r'^$',
-        RestrictedTemplateView.as_view(template_name='elvanto_sync/index.html'),
+        RestrictedTemplateView.as_view(
+            template_name='elvanto_sync/index.html'
+        ),
         name='index'
     ),
 ]

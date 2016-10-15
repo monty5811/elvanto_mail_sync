@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.test import Client
 
 
-
 @pytest.fixture()
 def users():
     user = User.objects.create_user(
