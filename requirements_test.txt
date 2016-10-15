@@ -1,6 +1,6 @@
 -r requirements.txt
 cov-core==1.15.0
-coverage==3.7.1
+coverage==4.2.0
 fake-factory==0.5.2
 hypothesis==1.6.2
 hypothesis-fakefactory==0.12.1
