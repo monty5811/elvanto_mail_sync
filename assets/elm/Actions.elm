@@ -11,53 +11,32 @@ import Messages exposing (..)
 import Decoders exposing (..)
 
 
-filterByPk : Int -> ElvantoGroup -> Bool
-filterByPk pk group =
-    if group.pk == pk then
-        True
-    else
-        False
-
-
-getData : String -> CSRFToken -> Task Http.Error Groups
-getData url csrftoken =
-    csrfSend url "GET" Http.empty csrftoken
+getGroups : CSRFToken -> Task Http.Error Groups
+getGroups csrftoken =
+    csrfSend groupsUrl "GET" Http.empty csrftoken
         |> Http.fromJson (Decode.list groupDecoder)
 
 
-getPeople : String -> CSRFToken -> Task Http.Error People
-getPeople url csrftoken =
-    csrfSend url "GET" Http.empty csrftoken
+getPeople : CSRFToken -> Task Http.Error People
+getPeople csrftoken =
+    csrfSend peopleUrl "GET" Http.empty csrftoken
         |> Http.fromJson (Decode.list personDecoder)
 
 
-fetchCmd : String -> CSRFToken -> Cmd Msg
-fetchCmd url csrftoken =
-    Task.perform FetchError FetchSuccess (getData url csrftoken)
+fetchGroups : CSRFToken -> Cmd Msg
+fetchGroups csrftoken =
+    getGroups csrftoken
+        |> Task.perform FetchError FetchSuccess
 
 
-fetchGroups : Model -> Cmd Msg
-fetchGroups model =
-    fetchCmd groupsUrl model.csrftoken
+fetchPeople : CSRFToken -> Cmd Msg
+fetchPeople csrftoken =
+    getPeople csrftoken
+        |> Task.perform FetchError FetchPeopleSuccess
 
 
-fetchPeople : Model -> Cmd Msg
-fetchPeople model =
-    fetchPeopleCmd peopleUrl model.csrftoken
-
-
-fetchPeopleCmd : String -> CSRFToken -> Cmd Msg
-fetchPeopleCmd url csrftoken =
-    Task.perform FetchError FetchPeopleSuccess (getPeople url csrftoken)
-
-
-filterGroups : Regex.Regex -> ElvantoGroup -> Bool
-filterGroups regex record =
-    Regex.contains regex (toString record)
-
-
-filterPeople : Regex.Regex -> ElvantoPerson -> Bool
-filterPeople regex record =
+filterRecord : Regex.Regex -> a -> Bool
+filterRecord regex record =
     Regex.contains regex (toString record)
 
 
@@ -280,3 +259,8 @@ submitPullAllRequest model =
         )
         model.csrftoken
         |> Http.fromJson decodeAlwaysTrue
+
+
+updateFilterRegex : String -> Regex.Regex
+updateFilterRegex text =
+    Regex.regex (Regex.escape text)

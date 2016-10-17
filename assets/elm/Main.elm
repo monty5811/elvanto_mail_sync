@@ -8,7 +8,7 @@ import DjangoSend exposing (csrfSend, CSRFToken)
 import Regex
 import Actions exposing (..)
 import Messages exposing (..)
-import Fragments exposing (..)
+import Views exposing (errorView, mainView)
 import Time exposing (Time, minute)
 
 
@@ -39,7 +39,7 @@ init flags =
       , error = False
       , formStatus = NoRequest
       }
-    , fetchCmd groupsUrl flags.csrftoken
+    , fetchGroups flags.csrftoken
     )
 
 
@@ -52,10 +52,10 @@ update msg model =
     case msg of
         -- Load data
         LoadGroups ->
-            ( model, (fetchGroups model) )
+            ( model, (fetchGroups model.csrftoken) )
 
         LoadPeople ->
-            ( model, (fetchPeople model) )
+            ( model, (fetchPeople model.csrftoken) )
 
         -- Main page updates
         PullAllNow ->
@@ -68,7 +68,7 @@ update msg model =
             ( { model | groupFilter = nullRegex, displayGroup = True, activeGroupPk = pk, emailField = (Maybe.withDefault "" email), pushAutoField = pushAuto }, Cmd.none )
 
         UpdateGroupFilter filterText ->
-            ( { model | groupFilter = Regex.regex (Regex.escape filterText) }, Cmd.none )
+            ( { model | groupFilter = (updateFilterRegex filterText) }, Cmd.none )
 
         -- Group page updates
         HideGroup ->
@@ -87,7 +87,7 @@ update msg model =
             ( { model | formStatus = RequestSent }, (submitFormCmd model) )
 
         UpdatePersonFilter filterText ->
-            ( { model | personFilter = Regex.regex (Regex.escape filterText) }, Cmd.none )
+            ( { model | personFilter = (updateFilterRegex filterText) }, Cmd.none )
 
         -- Group table updates
         ToggleGlobal pk state ->
@@ -98,7 +98,7 @@ update msg model =
 
         -- Http result updates
         FetchSuccess groups ->
-            ( { model | groups = groups }, (fetchPeople model) )
+            ( { model | groups = groups }, (fetchPeople model.csrftoken) )
 
         FetchPeopleSuccess people ->
             ( { model | people = people }, Cmd.none )
@@ -107,16 +107,16 @@ update msg model =
             ( { model | error = True }, Cmd.none )
 
         ToggleAutoSuccess group ->
-            ( model, (fetchGroups model) )
+            ( model, (fetchGroups model.csrftoken) )
 
         FormSubmitSuccess arg ->
-            ( { model | formStatus = RequestSuccess }, (fetchGroups model) )
+            ( { model | formStatus = RequestSuccess }, (fetchGroups model.csrftoken) )
 
         FormSubmitError error ->
             ( { model | formStatus = RequestFail }, Cmd.none )
 
         ToggleSuccess person ->
-            ( model, (fetchGroups model) )
+            ( model, (fetchGroups model.csrftoken) )
 
 
 
