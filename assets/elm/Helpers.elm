@@ -47,3 +47,11 @@ getGroupPushAuto : Model -> Int -> Bool
 getGroupPushAuto model pk =
     getCurrentGroup model.groups pk
         |> .push_auto
+
+
+loadingColor : Model -> String
+loadingColor model =
+    if model.loading then
+        "#ccc"
+    else
+        "#fff"

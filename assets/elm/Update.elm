@@ -9,6 +9,7 @@ import Messages exposing (..)
 import Models exposing (..)
 import Nav.Models exposing (Page(..))
 import Nav.Parser exposing (toPath, urlParser)
+import Debug
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -62,10 +63,19 @@ update msg model =
 
         -- Http result updates
         FetchGroupsSuccess groups ->
-            ( { model | groups = groups }, (fetchPeople model.csrftoken) )
+            ( { model | groups = groups }
+            , fetchPeople model.csrftoken
+            )
 
         FetchPeopleSuccess people ->
-            ( { model | people = people }, Cmd.none )
+            ( { model
+                | people = people
+                , emailField = getGroupEmail model model.activeGroupPk
+                , pushAutoField = getGroupPushAuto model model.activeGroupPk
+                , loading = False
+              }
+            , Cmd.none
+            )
 
         FetchError error ->
             ( { model | error = True }, Cmd.none )

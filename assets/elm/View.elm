@@ -20,7 +20,7 @@ view model =
             [ errorView
             ]
     else
-        div [ class "container" ]
+        div [ class "container", style [ ( "background-color", (loadingColor model) ) ] ]
             [ mainView model
             ]
 
