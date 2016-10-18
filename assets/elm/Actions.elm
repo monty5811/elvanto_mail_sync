@@ -42,14 +42,14 @@ fetchPeople csrftoken =
 
 submitPushAllRequest : Model -> Cmd Msg
 submitPushAllRequest model =
-    csrfSend "buttons/push_all/" "POST" (encodeBody []) model.csrftoken
+    csrfSend "/buttons/push_all/" "POST" (encodeBody []) model.csrftoken
         |> Http.fromJson decodeAlwaysTrue
         |> Task.perform FetchError (always LoadGroups)
 
 
 submitPullAllRequest : Model -> Cmd Msg
 submitPullAllRequest model =
-    csrfSend "buttons/push_all/" "POST" (encodeBody []) model.csrftoken
+    csrfSend "/buttons/push_all/" "POST" (encodeBody []) model.csrftoken
         |> Http.fromJson decodeAlwaysTrue
         |> Task.perform FetchError (always LoadGroups)
 
@@ -85,7 +85,7 @@ submitPushRequest model =
         body =
             pushRequestBody model.activeGroupPk
     in
-        csrfSend "buttons/push_group/" "POST" body model.csrftoken
+        csrfSend "/buttons/push_group/" "POST" body model.csrftoken
             |> Http.fromJson decodeAlwaysTrue
             |> Task.perform FetchError (always LoadGroups)
 
