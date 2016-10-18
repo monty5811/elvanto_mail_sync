@@ -1,13 +1,28 @@
-module Views exposing (errorView, mainView)
+module View exposing (view)
 
+import Actions exposing (..)
+import GroupViews exposing (groupView)
+import Helpers exposing (..)
 import Html exposing (..)
 import Html.Lazy exposing (lazy)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
-import Models exposing (..)
+import Html.Events exposing (onInput, onWithOptions)
+import Json.Decode as Json
 import Messages exposing (..)
-import Actions exposing (..)
-import GroupViews exposing (groupView)
+import Models exposing (..)
+import Nav.Models exposing (..)
+
+
+view : Model -> Html Msg
+view model =
+    if model.error then
+        div [ class "container" ]
+            [ errorView
+            ]
+    else
+        div [ class "container" ]
+            [ mainView model
+            ]
 
 
 errorView : Html Msg
@@ -21,10 +36,12 @@ errorView =
 
 mainView : Model -> Html Msg
 mainView model =
-    if model.displayGroup then
-        groupView model
-    else
-        mainTable model
+    case model.currentPage of
+        Home ->
+            mainTable model
+
+        Group pk ->
+            groupView model
 
 
 mainTable : Model -> Html Msg
@@ -93,7 +110,7 @@ groupRow group =
 
 nameLink : ElvantoGroup -> Html Msg
 nameLink group =
-    a [ href "#", onClick (ShowGroup group.pk group.google_email group.push_auto) ] [ text group.name ]
+    a [ href "", onClick (ShowGroup group.pk group.google_email group.push_auto) ] [ text group.name ]
 
 
 syncIndicator : Bool -> Html Msg
@@ -111,9 +128,30 @@ dateCell date =
 
 pushAllButton : Model -> Html Msg
 pushAllButton model =
-    button [ class "btn btn-warning", onClick PushAllNow ] [ text "Push All" ]
+    case model.pushAllStatus of
+        NotClicked ->
+            button [ class "btn btn-warning", onClick PushAllNow ] [ text "Push All" ]
+
+        Clicked ->
+            button [ class "btn btn-disabled" ] [ text "Pushing..." ]
 
 
 pullAllButton : Model -> Html Msg
 pullAllButton model =
-    button [ class "btn btn-primary pull-xs-right", onClick PullAllNow ] [ text "Pull All" ]
+    case model.pullAllStatus of
+        NotClicked ->
+            button [ class "btn btn-primary pull-xs-right", onClick PullAllNow ] [ text "Pull All" ]
+
+        Clicked ->
+            button [ class "btn btn-disabled pull-xs-right" ] [ text "Pullling..." ]
+
+
+onClick : msg -> Attribute msg
+onClick message =
+    let
+        options =
+            { stopPropagation = True
+            , preventDefault = True
+            }
+    in
+        onWithOptions "click" options (Json.succeed message)

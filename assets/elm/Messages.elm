@@ -1,7 +1,7 @@
 module Messages exposing (..)
 
-import Models exposing (..)
 import Http
+import Models exposing (..)
 
 
 -- MESSAGES
@@ -12,7 +12,7 @@ type Msg
     | LoadPeople
     | UpdateGroupFilter String
     | UpdatePersonFilter String
-    | FetchSuccess Groups
+    | FetchGroupsSuccess Groups
     | FetchPeopleSuccess People
     | FetchError Http.Error
     | ToggleGlobal Int Bool
@@ -28,4 +28,5 @@ type Msg
     | FormSubmit Model
     | FormSubmitError Http.Error
     | FormSubmitSuccess ElvantoGroup
-    | FormEmail String
+    | FormEmailChange String
+    | Go String

@@ -2,12 +2,11 @@ module Models exposing (..)
 
 import Regex
 import DjangoSend exposing (CSRFToken)
+import Nav.Models exposing (..)
 
 
 type alias Flags =
-    { csrftoken : String
-    , pk : Int
-    }
+    { csrftoken : String }
 
 
 type alias Model =
@@ -15,13 +14,35 @@ type alias Model =
     , people : People
     , csrftoken : CSRFToken
     , error : Bool
-    , displayGroup : Bool
     , activeGroupPk : Int
     , groupFilter : Regex.Regex
     , personFilter : Regex.Regex
     , emailField : String
     , pushAutoField : Bool
     , formStatus : FormStatus
+    , pushGroupStatus : ButtonStatus
+    , pushAllStatus : ButtonStatus
+    , pullAllStatus : ButtonStatus
+    , currentPage : Page
+    }
+
+
+initialModel : Flags -> Model
+initialModel flags =
+    { groups = []
+    , people = []
+    , csrftoken = flags.csrftoken
+    , groupFilter = nullRegex
+    , personFilter = nullRegex
+    , activeGroupPk = 0
+    , emailField = ""
+    , pushAutoField = False
+    , error = False
+    , formStatus = NoRequest
+    , pushGroupStatus = NotClicked
+    , pushAllStatus = NotClicked
+    , pullAllStatus = NotClicked
+    , currentPage = Home
     }
 
 
@@ -30,6 +51,11 @@ type FormStatus
     | RequestSent
     | RequestSuccess
     | RequestFail
+
+
+type ButtonStatus
+    = NotClicked
+    | Clicked
 
 
 type alias ElvantoGroup =

@@ -4,9 +4,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Regex
-import Models exposing (..)
-import Messages exposing (..)
 import Actions exposing (..)
+import Helpers exposing (..)
+import Messages exposing (..)
+import Models exposing (..)
 
 
 groupView : Model -> Html Msg
@@ -18,23 +19,30 @@ groupView model =
         people =
             getCurrentPeople model.people group
     in
-        if model.displayGroup then
-            div [ class "six column" ]
-                [ div
-                    [ class "d-block w-100" ]
-                    [ button [ class "btn btn-danger", style [ ( "width", "33%" ) ], onClick HideGroup ] [ text "Close" ]
-                    , button [ class "btn btn-success", style [ ( "width", "33%" ) ], onClick PushNow ] [ text "Push to Google" ]
-                    , syncButton group model.pushAutoField
-                    ]
-                , br [] []
-                , headerView group
-                , br [] []
-                , formView model group
-                , br [] []
-                , groupTableView group people model.personFilter
+        div [ class "six column" ]
+            [ div
+                [ class "d-block w-100" ]
+                [ button [ class "btn btn-danger", style [ ( "width", "33%" ) ], onClick HideGroup ] [ text "Close" ]
+                , pushGroupButton model.pushGroupStatus
+                , syncButton group model.pushAutoField
                 ]
-        else
-            div [] []
+            , br [] []
+            , headerView group
+            , br [] []
+            , formView model group
+            , br [] []
+            , groupTableView group people model.personFilter
+            ]
+
+
+pushGroupButton : ButtonStatus -> Html Msg
+pushGroupButton status =
+    case status of
+        NotClicked ->
+            button [ class "btn btn-success", style [ ( "width", "33%" ) ], onClick PushNow ] [ text "Push to Google" ]
+
+        Clicked ->
+            button [ class "btn btn-disabled", style [ ( "width", "33%" ) ] ] [ text "Pushing ..." ]
 
 
 headerView : ElvantoGroup -> Html Msg
@@ -111,7 +119,7 @@ emailForm : Model -> ElvantoGroup -> Html Msg
 emailForm model group =
     div []
         [ div [ class "form-group" ]
-            [ input [ class "form-control", id "id_google_email", attribute "maxlength" "254", name "google_email", placeholder "Google Email", type' "email", onInput FormEmail, value model.emailField ]
+            [ input [ class "form-control", id "id_google_email", attribute "maxlength" "254", name "google_email", placeholder "Google Email", type' "email", onInput FormEmailChange, value model.emailField ]
                 []
             ]
         , div [ class "form-group" ]

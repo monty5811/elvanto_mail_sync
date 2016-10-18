@@ -30,6 +30,13 @@ urls_basic = [
         ),
         name='index'
     ),
+    url(
+        r'^group/(?P<pk>[0-9]+)$',
+        RestrictedTemplateView.as_view(
+            template_name='elvanto_sync/index.html'
+        ),
+        name='group'
+    )
 ]
 
 urls_buttons = [
@@ -97,4 +104,4 @@ urls_api = [
     ),
 ]
 
-urlpatterns = urls_basic + urls_buttons + urls_api
+urlpatterns = urls_buttons + urls_api + urls_basic

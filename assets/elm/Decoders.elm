@@ -32,3 +32,8 @@ personDecoder =
         ("pk" := Decode.int)
         ("disabled_entirely" := Decode.bool)
         ("disabled_groups" := Decode.list Decode.int)
+
+
+decodeAlwaysTrue : Decode.Decoder Bool
+decodeAlwaysTrue =
+    Decode.succeed True
