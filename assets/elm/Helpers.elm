@@ -33,7 +33,10 @@ inGroup group person =
 
 textToRegex : String -> Regex.Regex
 textToRegex text =
-    Regex.regex (Regex.escape text)
+    text
+        |> Regex.escape
+        |> Regex.regex
+        |> Regex.caseInsensitive
 
 
 getGroupEmail : Model -> Int -> String
@@ -47,11 +50,3 @@ getGroupPushAuto : Model -> Int -> Bool
 getGroupPushAuto model pk =
     getCurrentGroup model.groups pk
         |> .push_auto
-
-
-loadingColor : Model -> String
-loadingColor model =
-    if model.loading then
-        "#ccc"
-    else
-        "#fff"

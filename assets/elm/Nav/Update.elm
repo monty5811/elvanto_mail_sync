@@ -1,7 +1,7 @@
 module Nav.Update exposing (..)
 
 import Navigation
-import Actions exposing (fetchGroupsInit)
+import Actions exposing (pageLoadInit)
 import Helpers exposing (..)
 import Messages exposing (Msg(..))
 import Models exposing (..)
@@ -24,7 +24,7 @@ urlUpdate result model =
                         , emailField = getGroupEmail model pk
                         , pushAutoField = getGroupPushAuto model pk
                       }
-                    , fetchGroupsInit model
+                    , pageLoadInit model
                     )
 
                 _ ->
@@ -35,5 +35,5 @@ urlUpdate result model =
                         , pushGroupStatus = NotClicked
                         , groupFilter = nullRegex
                       }
-                    , fetchGroupsInit model
+                    , pageLoadInit model
                     )

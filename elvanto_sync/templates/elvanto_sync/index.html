@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +18,7 @@
 </style>
 </head>
 <body>
-<script src="{%static 'js/app.js'%}"></script>
+<script src="{% static 'js/App.js' %}"></script>
 {% csrf_token %}
 </body>
 </html>

@@ -15,6 +15,9 @@ import Debug
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
         -- Load data
         LoadGroups ->
             ( model, (fetchGroups model.csrftoken) )
@@ -63,7 +66,10 @@ update msg model =
 
         -- Http result updates
         FetchGroupsSuccess groups ->
-            ( { model | groups = groups }
+            ( { model
+                | groups = groups
+                , loadingProgress = 75
+              }
             , fetchPeople model.csrftoken
             )
 
@@ -72,7 +78,8 @@ update msg model =
                 | people = people
                 , emailField = getGroupEmail model model.activeGroupPk
                 , pushAutoField = getGroupPushAuto model model.activeGroupPk
-                , loading = False
+                , loadingProgress = 100
+                , firstLoadDone = True
               }
             , Cmd.none
             )
@@ -95,3 +102,7 @@ update msg model =
         -- Change url
         Go path ->
             ( model, Navigation.newUrl path )
+
+        -- Window size
+        WinResize size ->
+            ( { model | height = size.height }, Cmd.none )

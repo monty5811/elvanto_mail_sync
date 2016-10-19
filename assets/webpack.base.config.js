@@ -5,7 +5,7 @@ module.exports = {
   context: __dirname,
 
   entry: {
-    app: './elm/app',
+    App: './elm/App',
   },
 
   output: {
@@ -34,7 +34,6 @@ module.exports = {
     ],
   },
 
-  devtool: 'cheap-module-source-map',
   watchOptions: {
     poll: 500
   }

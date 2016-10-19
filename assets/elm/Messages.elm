@@ -1,6 +1,7 @@
 module Messages exposing (..)
 
 import Http
+import Window exposing (Size)
 import Models exposing (..)
 
 
@@ -8,7 +9,8 @@ import Models exposing (..)
 
 
 type Msg
-    = LoadGroups
+    = NoOp
+    | LoadGroups
     | LoadPeople
     | UpdateGroupFilter String
     | UpdatePersonFilter String
@@ -30,3 +32,4 @@ type Msg
     | FormSubmitSuccess ElvantoGroup
     | FormEmailChange String
     | Go String
+    | WinResize Size

@@ -3,6 +3,7 @@ module Actions exposing (..)
 import Task exposing (Task)
 import Http
 import Json.Decode as Decode
+import Window
 import DjangoSend exposing (csrfSend, CSRFToken)
 import Decoders exposing (..)
 import Encoders exposing (..)
@@ -11,13 +12,25 @@ import Messages exposing (..)
 import Models exposing (..)
 
 
+-- Initial window size
+
+
+getWinSize : Cmd Msg
+getWinSize =
+    Task.perform (\_ -> NoOp) WinResize Window.size
+
+
+
 -- Fetch data from server
 
 
-fetchGroupsInit : Model -> Cmd Msg
-fetchGroupsInit model =
+pageLoadInit : Model -> Cmd Msg
+pageLoadInit model =
     if List.isEmpty model.groups then
-        fetchGroups model.csrftoken
+        Cmd.batch
+            [ getWinSize
+            , fetchGroups model.csrftoken
+            ]
     else
         Cmd.none
 

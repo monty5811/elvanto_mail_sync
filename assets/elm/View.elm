@@ -20,8 +20,48 @@ view model =
             [ errorView
             ]
     else
-        div [ class "container", style [ ( "background-color", (loadingColor model) ) ] ]
-            [ mainView model
+        div [ class "container" ]
+            [ loadingIndicator model
+            , mainView model
+            ]
+
+
+loadingIndicator : Model -> Html Msg
+loadingIndicator model =
+    if model.firstLoadDone then
+        div [] []
+    else
+        div
+            [ class "pos-f-t"
+            , style
+                [ ( "min-height", (toString model.height) ++ "px" )
+                ]
+            ]
+            [ div
+                [ class "pos-f-t"
+                , style
+                    [ ( "z-index", "100000" )
+                    , ( "top", toString ((round ((toFloat model.height) / 2)) - 32) ++ "px" )
+                    , ( "font-size", "32px" )
+                    ]
+                ]
+                [ div [ class "text-xs-center" ] [ text "Loading" ]
+                , progress
+                    [ class "progress progress-success"
+                    , value (toString model.loadingProgress)
+                    , Html.Attributes.max "100"
+                    ]
+                    []
+                ]
+            , div
+                [ class "pos-f-t"
+                , style
+                    [ ( "background-color", "#ddd" )
+                    , ( "min-height", (toString model.height) ++ "px" )
+                    , ( "opacity", ".75" )
+                    ]
+                ]
+                []
             ]
 
 

@@ -24,7 +24,9 @@ type alias Model =
     , pushAllStatus : ButtonStatus
     , pullAllStatus : ButtonStatus
     , currentPage : Page
-    , loading : Bool
+    , loadingProgress : Int
+    , firstLoadDone : Bool
+    , height : Int
     }
 
 
@@ -44,7 +46,9 @@ initialModel flags =
     , pushAllStatus = NotClicked
     , pullAllStatus = NotClicked
     , currentPage = Home
-    , loading = True
+    , loadingProgress = 25
+    , firstLoadDone = False
+    , height = 720
     }
 
 
