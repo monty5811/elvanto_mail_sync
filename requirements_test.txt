@@ -1,9 +1,9 @@
 -r requirements.txt
 cov-core==1.15.0
 coverage==4.2.0
-fake-factory==0.5.2
-hypothesis==1.6.2
-hypothesis-fakefactory==0.12.1
+fake-factory==0.7.2
+hypothesis==3.5.3
+hypothesis-fakefactory==2.0.0
 pytest==3.0.3
 pytest-cov==2.4.0
 pytest-django==3.0.0

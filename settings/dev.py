@@ -1,5 +1,12 @@
 from settings.base import *
 
+INSTALLED_APPS.insert(
+    INSTALLED_APPS.index('django.contrib.staticfiles'),
+    'whitenoise.runserver_nostatic',
+)
+
+print(INSTALLED_APPS)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

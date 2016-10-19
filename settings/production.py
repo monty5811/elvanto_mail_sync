@@ -8,6 +8,16 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'set this in heroku')
 DEBUG = False
 ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOST', '*')]
 
+# Templates
+TEMPLATES[0]['OPTIONS']['loaders'] = [
+    (
+        'django.template.loaders.cached.Loader', [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ]
+    ),
+]
+
 # Parse database configuration from $DATABASE_URL
 DATABASES['default'] = dj_database_url.config()
 DATABASES['default']['ENGINE'] = 'django_postgrespool'
@@ -19,7 +29,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
 # OPBEAT
-INSTALLED_APPS += ["opbeat.contrib.django", ]
+INSTALLED_APPS += ['opbeat.contrib.django', ]
+
+MIDDLEWARE = [
+    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+] + MIDDLEWARE
 
 OPBEAT = {
     "ORGANIZATION_ID": os.environ.get('OPBEAT_ORG_ID', ''),
@@ -27,11 +41,7 @@ OPBEAT = {
     "SECRET_TOKEN": os.environ.get('OPBEAT_SECRET_TOKEN', ''),
 }
 
-MIDDLEWARE_CLASSES = [
-    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
-    'sslify.middleware.SSLifyMiddleware',
-] + MIDDLEWARE_CLASSES
-
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -75,10 +85,8 @@ LOGGING = {
     },
 }
 
-# Security:
-MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + [
-    'django.middleware.security.SecurityMiddleware',
-]
+# Security
+
 # CSRF_COOKIE_SECURE = True
 # CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
