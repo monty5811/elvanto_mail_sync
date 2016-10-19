@@ -28,6 +28,10 @@ class ElvantoGroup(models.Model):
         ggl.create_mailing_list(self.google_email)
 
     def push_to_google(self):
+        if self.google_email is None or not self.google_email:
+            print('No email address for %s', str(self))
+            return
+
         # TODO add check if we have a google_email!
         if not self.check_google_group_exists():
             self.create_google_group()
