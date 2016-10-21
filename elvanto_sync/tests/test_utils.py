@@ -1,6 +1,6 @@
 from hypothesis import given
 from hypothesis.extra.fakefactory import fake_factory
-from hypothesis.strategies import sets
+from hypothesis.strategies import lists, sets
 
 from elvanto_sync import utils
 
@@ -9,14 +9,18 @@ from elvanto_sync import utils
 def test_clean_emails(email_set1, email_set2):
     utils.clean_emails(elvanto_emails=email_set1, google_emails=email_set2)
 
+@given(lists(fake_factory('email')))
+def test_convert_aliases_any_email(emails):
+    utils.convert_aliases(emails)
 
-def test_retry_request200():
-    r = utils.retry_request('http://www.example.com/', 'get')
-    assert r.status_code == 200
-
-
-def test_retry_request404():
-    r = utils.retry_request(
-        'http://www.github.com/monty5811/DoesNotExist', 'get'
-    )
-    assert r.status_code == 404
+def test_convert_aliases_removes_googlemail():
+    emails = utils.convert_aliases([
+        'test@gmail.com',
+        'test2@googlemail.com',
+        'test3@hotmail.com',
+    ])
+    assert emails == [
+        'test@gmail.com',
+        'test2@gmail.com',
+        'test3@hotmail.com',
+    ]

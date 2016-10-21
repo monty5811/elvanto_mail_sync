@@ -22,15 +22,13 @@ urls_basic = [
     url(r'^admin/', include(admin.site.urls)),
     url('', include(
         'social.apps.django_app.urls', namespace='social'
-    )),
-    url(
+    )), url(
         r'^$',
         RestrictedTemplateView.as_view(
             template_name='elvanto_sync/index.html'
         ),
         name='index'
-    ),
-    url(
+    ), url(
         r'^group/(?P<pk>[0-9]+)$',
         RestrictedTemplateView.as_view(
             template_name='elvanto_sync/index.html'
@@ -92,15 +90,6 @@ urls_api = [
             permission_classes=(IsAuthenticated, )
         ),
         name='api_people'
-    ),
-    url(
-        r'^api/v1/elvanto/people/(?P<pk>[0-9]+)$',
-        va.ApiMember.as_view(
-            model_class=ElvantoPerson,
-            serializer_class=ElvantoPersonSerializer,
-            permission_classes=(IsAuthenticated, ),
-        ),
-        name='api_person'
     ),
 ]
 

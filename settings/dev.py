@@ -5,8 +5,6 @@ INSTALLED_APPS.insert(
     'whitenoise.runserver_nostatic',
 )
 
-print(INSTALLED_APPS)
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

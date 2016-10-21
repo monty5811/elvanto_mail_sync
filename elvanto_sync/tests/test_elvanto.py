@@ -11,7 +11,7 @@ from elvanto_sync.tests.conftest import elvanto_vcr
 class TestElvanto():
     @elvanto_vcr
     def test_pull_groups(self):
-        elvanto.pull_down_groups()
+        elvanto.pull_groups()
         grp = ElvantoGroup.objects.get(
             e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7'
         )
@@ -19,7 +19,7 @@ class TestElvanto():
 
     @elvanto_vcr
     def test_pull_people(self):
-        elvanto.pull_down_people()
+        elvanto.pull_people()
         calvin = ElvantoPerson.objects.get(
             e_id='f7cfa258-d3c6-11e4-95ba-068b656294b7'
         )
@@ -42,10 +42,9 @@ class TestElvanto():
         assert owen.email == 'john.owen@cambridge.com'
 
     @elvanto_vcr
-    def test_pop_groups(self):
-        elvanto.pull_down_groups()
-        elvanto.pull_down_people()
-        elvanto.populate_groups()
+    def test_pull_groups(self):
+        elvanto.pull_people()
+        elvanto.pull_groups()
         grp_all = ElvantoGroup.objects.get(
             e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7'
         )
@@ -63,5 +62,5 @@ class TestElvanto():
         elvanto.refresh_elvanto_data()
 
     @elvanto_vcr
-    def refresh_pull_management_command(self):
+    def test_refresh_pull_management_command(self):
         call_command('pull_from_elvanto')

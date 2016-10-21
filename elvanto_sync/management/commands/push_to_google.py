@@ -4,7 +4,7 @@ from elvanto_sync.google import update_mailing_lists
 
 
 class Command(BaseCommand):
-    help = 'Push to all google lists - requires a user to have signed in previously.'
+    help = 'Push to all google lists.'
 
     def handle(self, *args, **options):
         self.stdout.write('Beginning push...')

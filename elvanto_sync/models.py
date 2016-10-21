@@ -1,7 +1,12 @@
+import logging
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils import timezone
 
-import elvanto_sync.google as ggl
+from elvanto_sync.google import GoogleClient
+from elvanto_sync import utils
+
+logger = logging.getLogger('elvanto_sync')
 
 
 class ElvantoGroup(models.Model):
@@ -18,25 +23,68 @@ class ElvantoGroup(models.Model):
         help_text="Check this if you want changes for this group to be pushed to google periodically"
     )
 
-    def google_emails(self):
-        return ggl.fetch_emails(self.google_email)
+    def push_to_google(self, api=None):
+        """Push to google.
 
-    def check_google_group_exists(self):
-        return ggl.check_mailing_list_exists(self.google_email)
-
-    def create_google_group(self):
-        ggl.create_mailing_list(self.google_email)
-
-    def push_to_google(self):
+        Reuse api if provided.
+        """
+        # Check if we have an email to sync to:
         if self.google_email is None or not self.google_email:
-            print('No email address for %s', str(self))
+            logger.info('No email address for %s', str(self))
             return
+        logger.info('Pushing to %s', self.google_email)
 
-        # TODO add check if we have a google_email!
-        if not self.check_google_group_exists():
-            self.create_google_group()
+        # Reuse api session, and update obj with email address:
+        if api is None:
+            api = GoogleClient(group=self.google_email)
 
-        ggl.push_emails_to_list(self.google_email, self.pk)
+        api.group = self.google_email
+
+        # Sync:
+        if not api.check_group_exists():
+            api.create_group()
+
+        emails = utils.clean_emails(
+            elvanto_emails=self.elvanto_emails(),
+            google_emails=api.fetch_members()
+        )
+        logger.info('Emails here: [%s]', ','.join(emails.elvanto))
+        logger.info('Emails google: [%s]', ','.join(emails.google))
+        here_not_on_google = set(emails.elvanto) - set(emails.google)
+        logger.info('Here, not on google: [%s]', ','.join(here_not_on_google))
+        on_google_not_here = set(emails.google) - set(emails.elvanto)
+        logger.info('On google, not here: [%s]', ','.join(on_google_not_here))
+
+        # update the group, we must call remove first, otherwise we may add
+        # a member and then remove them due to domain aliases
+        api.remove_members(on_google_not_here)
+        api.add_members(here_not_on_google)
+
+        self.last_pushed = timezone.now()
+        self.save()
+
+        # check emails match now:
+        new_emails = utils.clean_emails(
+            elvanto_emails=self.elvanto_emails(),
+            google_emails=api.fetch_members()
+        )
+        self._check_emails_match(new_emails)
+
+    def _check_emails_match(self, emails):
+        emails.google = utils.convert_aliases(emails.google)
+        emails.elvanto = utils.convert_aliases(emails.elvanto)
+
+        here_not_on_google = set(emails.elvanto) - set(emails.google)
+        on_google_not_here = set(emails.google) - set(emails.elvanto)
+        if (len(here_not_on_google) + len(on_google_not_here)) > 0:
+            logger.warning(
+                'Updated list of emails does not result in a match for %s.'
+                ' Here, not on google: %s'
+                ' On google, not here: %s',
+                self.google_email,
+                ','.join(sorted(here_not_on_google)),
+                ','.join(sorted(on_google_not_here)),
+            )
 
     def elvanto_emails(self):
         return list(

@@ -1,125 +1,155 @@
-from __future__ import print_function
-
-import json
 import logging
+from time import sleep
 
 from django.conf import settings
-from django.utils import timezone
+import requests
 from oauth2client.service_account import ServiceAccountCredentials
-
-from elvanto_sync import utils
-from elvanto_sync.utils import retry_request
 
 logger = logging.getLogger('elvanto_sync')
 
 
-def fetch_google_token():
-    creds = ServiceAccountCredentials._from_parsed_json_keyfile(
-        settings.GOOGLE_KEYFILE_DICT,
-        settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE,
-    )
-    creds = creds.create_delegated(settings.G_DELEGATED_USER)
-    creds.get_access_token()
-    return creds.access_token
+class GoogleClient:
+    def __init__(self, group=''):
+        self.creds = self.setup_creds()
+        self.session = self.setup_session()
+        self.group = group
 
+        self.base_url = 'https://www.googleapis.com/admin/directory/v1/groups/'
 
-def fetch_emails(mailing_list):
-    r = retry_request(
-        'https://www.googleapis.com/admin/directory/v1/groups/{0}/members'.
-        format(mailing_list.replace('@', '%40')),
-        'get',
-        params={'access_token': fetch_google_token()}
-    )
-    try:
-        return [x['email'].lower() for x in r.json()['members']]
-    except KeyError:
-        return []
+    def _encode_email(self, email):
+        return email.replace('@', '%40')
 
+    def encoded_group(self):
+        return self._encode_email(self.group)
 
-def check_mailing_list_exists(mailing_list):
-    r = retry_request(
-        'https://www.googleapis.com/admin/directory/v1/groups/{0}'.
-        format(mailing_list.replace('@', '%40')),
-        'get',
-        params={'access_token': fetch_google_token()}
-    )
-    if r.status_code == 200:
-        return True
-    elif r.status_code == 404:
-        print('{} does not exist'.format(mailing_list))
-        return False
+    def _group_url(self):
+        return '{base_url}{group}'.format(
+            base_url=self.base_url,
+            group=self.encoded_group(),
+        )
 
+    def _members_url(self):
+        return '{base_url}{group}/members'.format(
+            base_url=self.base_url,
+            group=self.encoded_group(),
+        )
 
-def create_mailing_list(mailing_list):
-    logger.info('Creating mailing list: %s', mailing_list)
-    r = retry_request(
-        'https://www.googleapis.com/admin/directory/v1/groups',
-        'post',
-        params={'access_token': fetch_google_token()},
-        data=json.dumps({
-            'email': mailing_list
-        }),
-        headers={'Content-Type': 'application/json'}
-    )
-    if r.status_code == 201:
-        logger.info('Created mailing list: %s', mailing_list)
+    def _member_url(self, member):
+        return '{base_url}{group}/members/{member}'.format(
+            base_url=self.base_url,
+            group=self.encoded_group(),
+            member=self._encode_email(member),
+        )
 
+    def setup_creds(self):
+        creds = ServiceAccountCredentials._from_parsed_json_keyfile(
+            settings.GOOGLE_KEYFILE_DICT,
+            settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE,
+        )
+        creds = creds.create_delegated(settings.G_DELEGATED_USER)
+        creds.get_access_token()
+        return creds
 
-def push_emails_to_list(mailing_list, group_pk):
-    logger.info('Pushing to %s', mailing_list)
-    from elvanto_sync.models import ElvantoGroup
-    grp = ElvantoGroup.objects.get(pk=group_pk)
-    if not grp.check_google_group_exists():
-        grp.create_google_group()
+    def setup_session(self):
+        s = requests.Session()
+        s.params = {'access_token': self.creds.access_token}
+        return s
 
-    emails = utils.clean_emails(
-        elvanto_emails=grp.elvanto_emails(), google_emails=grp.google_emails()
-    )
-    logger.info('Emails here: [%s]', ','.join(emails.elvanto))
-    logger.info('Emails google: [%s]', ','.join(emails.google))
-    # groups do not match
-    here_not_on_google = set(emails.elvanto) - set(emails.google)
-    logger.info('Here, not on google: [%s]', ','.join(here_not_on_google))
-    on_google_not_here = set(emails.google) - set(emails.elvanto)
-    logger.info('On google, not here: [%s]', ','.join(on_google_not_here))
-    # TODO change to a single request
-    access_token = fetch_google_token()
-    for e in here_not_on_google:
-        retry_request(
-            'https://www.googleapis.com/admin/directory/v1/groups/{0}/members'.
-            format(mailing_list.replace('@', '%40')),
+    def refresh_session_creds(self):
+        self.creds = self.setup_creds()
+        self.session = self.setup_session()
+
+    def make_request(self, method, url, data=None, attempt=1):
+        resp = self.session.request(
+            method,
+            url,
+            json=data,
+        )
+        try:
+            resp.raise_for_status()
+        except Exception:
+            if resp.status_code == 403 or resp.status_code == 401:
+                self.refresh_session_creds()
+                if attempt < 3:
+                    self.make_request(url, method, data, attempt=attempt + 1)
+            else:
+                # TODO raise exception
+                pass
+        return resp
+
+    def check_group_exists(self):
+        r = self.make_request('get', self._group_url())
+        if r.status_code == 200:
+            return True
+        elif r.status_code == 404:
+            print('{} does not exist'.format(self.group))
+            return False
+
+    def create_group(self):
+        logger.info('Creating mailing list: %s', self.group)
+        r = self.make_request(
+            'post', self.base_url, data={'email': self.group}
+        )
+        if r.status_code == 201:
+            logger.info('Created mailing list: %s', self.group)
+
+    def fetch_members(self):
+        r = self.make_request('get', self._members_url())
+        try:
+            return [x['email'].lower() for x in r.json()['members']]
+        except KeyError:
+            return []
+
+    def add_member(self, url, email, attempt=0):
+        resp = self.make_request(
             'post',
-            params={'access_token': access_token},
-            data=json.dumps({
-                'email': e
-            }),
-            headers={'Content-Type': 'application/json'}
+            url,
+            data={'email': email},
         )
+        try:
+            resp.raise_for_status()
+        except Exception:
+            if resp.status_code == 409 and attempt < 3:
+                # let's wait and retry the request
+                sleep(5)
+                self.add_member(email, attempt = attempt + 1)
+            else:
+                logger.error(
+                    'Could not add member',
+                    exc_info=True,
+                    extra={
+                        'group': self.group,
+                        'member': email,
+                    }
+                )
 
-    # TODO change to a single request
-    for e in on_google_not_here:
-        retry_request(
-            'https://www.googleapis.com/admin/directory/v1/groups/{0}/members/{1}'.
-            format(mailing_list.replace('@', '%40'), e.replace('@', '%40')),
-            'delete',
-            params={'access_token': access_token}
-        )
+    def add_members(self, emails):
+        url = self._members_url()
+        for email in emails:
+            self.add_member(url, email)
 
-    grp.last_pushed = timezone.now()
-    grp.save()
-
-    # check emails match now:
-    new_set_of_emails = utils.clean_emails(
-        elvanto_emails=grp.elvanto_emails(), google_emails=grp.google_emails()
-    )
-    if set(new_set_of_emails.google) != set(new_set_of_emails.elvanto):
-        logger.warning(
-            'Updated list of emails does not result in a match for %s',
-            mailing_list
-        )
+    def remove_members(self, emails):
+        for email in emails:
+            url = self._member_url(email)
+            resp = self.make_request(
+                'delete',
+                url,
+            )
+            try:
+                resp.raise_for_status()
+            except Exception:
+                logger.error(
+                    'Could not delete member',
+                    exc_info=True,
+                    extra={
+                        'group': self.group,
+                        'member': email,
+                    }
+                )
 
 
 def update_mailing_lists(only_auto=True):
+    api = GoogleClient()
     from elvanto_sync.models import ElvantoGroup
     groups = ElvantoGroup.objects.all()
     if only_auto:
@@ -129,7 +159,7 @@ def update_mailing_lists(only_auto=True):
 
     for grp in groups:
         try:
-            grp.push_to_google()
+            grp.push_to_google(api=api)
         except Exception as e:
             print('[Failed] Issue with Group: {name}'.format(name=grp.name))
             print(e)

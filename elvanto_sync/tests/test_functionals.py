@@ -12,7 +12,7 @@ class TestUrls():
     @pytest.mark.parametrize("url,status_code", [(reverse('index'), 302), ])
     def test_not_logged_in(self, url, status_code, clients):
         resp = clients['c_out'].get(url)
-        assert resp.url.endswith("/login/google-oauth2?next=/")
+        assert resp.url.endswith("/login/google-oauth2/?next=/")
         assert resp.status_code == status_code
 
     @pytest.mark.parametrize("url,status_code", [(reverse('index'), 200), ])
@@ -23,9 +23,6 @@ class TestUrls():
         "url,status_code", [
             (reverse('api_groups'), 200),
             (reverse('api_people'), 200),
-            (reverse(
-                'api_person', kwargs={'pk': 1}
-            ), 200),
         ]
     )
     @elvanto_vcr
@@ -70,7 +67,10 @@ class TestUrls():
         # disable calvin
         post_data = {'pk': calvin.pk, 'disable': True}
         resp = clients['c_in'].generic(
-            'POST', reverse('button_update_global'), json.dumps(post_data)
+            'POST',
+            reverse('button_update_global'),
+            json.dumps(post_data),
+            content_type='application/json'
         )
         assert resp.status_code == 200
         calvin.refresh_from_db()
@@ -78,7 +78,10 @@ class TestUrls():
         # re-enable him again
         post_data = {'pk': calvin.pk, 'disable': False}
         resp = clients['c_in'].generic(
-            'POST', reverse('button_update_global'), json.dumps(post_data)
+            'POST',
+            reverse('button_update_global'),
+            json.dumps(post_data),
+            content_type='application/json'
         )
         assert resp.status_code == 200
         calvin.refresh_from_db()
@@ -100,7 +103,10 @@ class TestUrls():
             'disable': False,
         }
         resp = clients['c_in'].generic(
-            'POST', reverse('button_update_local'), json.dumps(post_data)
+            'POST',
+            reverse('button_update_local'),
+            json.dumps(post_data),
+            content_type='application/json'
         )
         assert resp.status_code == 200
         geneva_grp.refresh_from_db()
@@ -112,8 +118,63 @@ class TestUrls():
             'disable': True,
         }
         resp = clients['c_in'].generic(
-            'POST', reverse('button_update_local'), json.dumps(post_data)
+            'POST',
+            reverse('button_update_local'),
+            json.dumps(post_data),
+            content_type='application/json'
         )
         assert resp.status_code == 200
         geneva_grp.refresh_from_db()
         assert geneva_grp not in calvin.disabled_groups.all()
+
+    @elvanto_vcr
+    def test_push_auto_button(self, clients):
+        refresh_elvanto_data()
+        # ensure Geneva not syncing
+        geneva = ElvantoGroup.objects.get(name='Geneva')
+        assert not geneva.push_auto
+        # send button request
+        post_data = {
+            'pk': geneva.pk,
+            'push_auto': True,
+        }
+        resp = clients['c_in'].generic(
+            'POST',
+            reverse('button_update_sync'),
+            json.dumps(post_data),
+            content_type='application/json'
+        )
+        assert resp.status_code == 200
+        geneva.refresh_from_db()
+        assert geneva.push_auto
+        # and the other direction
+        post_data['push_auto'] = False
+        resp = clients['c_in'].generic(
+            'POST',
+            reverse('button_update_sync'),
+            json.dumps(post_data),
+            content_type='application/json'
+        )
+        assert resp.status_code == 200
+        geneva.refresh_from_db()
+        assert not geneva.push_auto
+
+    @elvanto_vcr
+    def test_email_field(self, clients):
+        refresh_elvanto_data()
+        # ensure Geneva not syncing
+        geneva = ElvantoGroup.objects.get(name='Geneva')
+        assert not geneva.google_email
+        # send button request
+        post_data = {'google_email': 'test@example.com'}
+        resp = clients['c_in'].generic(
+            'POST',
+            reverse(
+                'api_group', kwargs={'pk': geneva.pk}
+            ),
+            json.dumps(post_data),
+            content_type='application/json'
+        )
+        assert resp.status_code == 200
+        geneva.refresh_from_db()
+        assert geneva.google_email == 'test@example.com'

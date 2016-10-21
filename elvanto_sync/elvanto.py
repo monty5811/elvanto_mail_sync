@@ -1,29 +1,39 @@
-from __future__ import print_function
-
 import json
 
 from django.conf import settings
 from django.utils import timezone
+import requests
 
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
-from elvanto_sync.utils import retry_request
 
 
 class ElvantoApiException(Exception):
     pass
 
 
-def e_api(end_point, **kwargs):
-    base_url = 'https://api.elvanto.com/v1/'
-    e_url = '{0}{1}.json'.format(base_url, end_point)
-    resp = retry_request(
-        e_url, 'post', json=kwargs, auth=(settings.ELVANTO_KEY, '_')
-    )
-    data = json.loads(resp.text)
-    if data['status'] == 'ok':
-        return data
-    else:
-        raise ElvantoApiException(data['error'])
+class ElvantoClient:
+    def __init__(self, group=''):
+        self.session = self.setup_session()
+
+    def setup_session(self):
+        s = requests.Session()
+        s.auth = (settings.ELVANTO_KEY, '_')
+        return s
+
+    def make_request(self, method, end_point, json={}):
+        base_url = 'https://api.elvanto.com/v1/'
+        e_url = '{0}{1}.json'.format(base_url, end_point)
+        resp = self.session.request(
+            method,
+            e_url,
+            json=json,
+        )
+
+        data = resp.json()
+        if data['status'] == 'ok':
+            return data
+        else:
+            raise ElvantoApiException(data['error'])
 
 
 def extract_email(e_prsn):
@@ -37,45 +47,45 @@ def extract_email(e_prsn):
         return e_prsn['email']
 
 
-def pull_down_groups():
-    """
-    Pull all elvanto groups and create entries in local db.
-    """
-    data = e_api("groups/getAll")
-    for e_grp in data['groups']['group']:
-        grp, created = ElvantoGroup.objects.get_or_create(e_id=e_grp['id'])
-        grp.name = e_grp['name'].encode('utf-8', 'replace').strip()
-        # grp.group_members.clear()
-        grp.last_pulled = timezone.now()
-        grp.save()
+def _get_api(api):
+    if api is None:
+        api = ElvantoClient()
+    return api
 
 
-def pull_down_people():
+def pull_people(api=None):
     """
     Pull all elvanto people into db, then pull down groups to add people.
     Then iterate through them to add them to the correct groups
     """
+    api = _get_api(api)
     if len(settings.EMAIL_OVERRIDE_FIELD_ID) > 0:
         custom_field = 'custom_{0}'.format(settings.EMAIL_OVERRIDE_FIELD_ID)
         custom_fields = [custom_field]
     else:
         custom_fields = []
 
-    data = e_api(
-        "people/getAll",
-        fields=custom_fields,
-        page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE
+    data = api.make_request(
+        'get',
+        'people/getAll',
+        json={
+            'fields': custom_fields,
+            'page_size': settings.ELVANTO_PEOPLE_PAGE_SIZE,
+        },
     )
 
     people = data['people']
     num_synced = people["on_this_page"]
     page = 2
     while num_synced < people["total"]:
-        more_data = e_api(
-            "people/getAll",
-            fields=custom_fields,
-            page_size=settings.ELVANTO_PEOPLE_PAGE_SIZE,
-            page=page
+        more_data = api.make_request(
+            'get',
+            'people/getAll',
+            json={
+                'fields': custom_fields,
+                'page_size': settings.ELVANTO_PEOPLE_PAGE_SIZE,
+                'page': page,
+            },
         )
         for person in more_data["people"]["person"]:
             people["person"].append(person)
@@ -84,37 +94,44 @@ def pull_down_people():
 
     for e_prsn in people['person']:
         prsn, created = ElvantoPerson.objects.get_or_create(e_id=e_prsn['id'])
-        prsn.email = extract_email(e_prsn)
+        prsn.email = extract_email(e_prsn).lower()
         prsn.first_name = e_prsn['firstname'].strip()
         prsn.preferred_name = e_prsn['preferred_name'].strip()
         prsn.last_name = e_prsn['lastname'].strip()
         prsn.save()
 
 
-def populate_groups():
+def pull_groups(api=None):
     """
+    Pull all elvanto groups and create entries in local db.
     """
-    for grp in ElvantoGroup.objects.all():
+    # Grab groups with their people
+    api = _get_api(api)
+    data = api.make_request(
+        'get',
+        'groups/getAll',
+        json={'fields': ['people']},
+    )
+    for e_grp in data['groups']['group']:
+        # update/create group
+        grp, created = ElvantoGroup.objects.get_or_create(e_id=e_grp['id'])
+        grp.name = e_grp['name'].encode('utf-8', 'replace').strip()
+        grp.last_pulled = timezone.now()
+        # update membership
         grp.group_members.clear()
-        try:
-            data = e_api("groups/getInfo", id=str(grp.e_id), fields=['people'])
-        except Exception as e:
-            print('[Failed] Issue with Group: {name}'.format(name=grp.name))
-            print(e)
-            continue
-        if len(data['group'][0]['people']) > 0:
-            for x in data['group'][0]['people']['person']:
-                prsn = ElvantoPerson.objects.get(e_id=x['id'])
-                prsn.elvanto_groups.add(grp)
-                prsn.save()
+        if e_grp['people']:
+            e_ids = [x['id'] for x in e_grp['people']['person']]
+            people = ElvantoPerson.objects.filter(e_id__in=e_ids)
+            grp.group_members.add(*people)
+
+        grp.save()
 
 
 def refresh_elvanto_data():
     """
     """
-    print('Pulling Elvanto groups')
-    pull_down_groups()
+    api = ElvantoClient()
     print('Pulling Elvanto people')
-    pull_down_people()
-    print('Populating groups')
-    populate_groups()
+    pull_people(api)
+    print('Pulling Elvanto groups')
+    pull_groups(api)

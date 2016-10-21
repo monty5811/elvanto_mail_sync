@@ -102,7 +102,7 @@ SOCIAL_AUTH_MODEL = 'elvanto_sync'
 SOCIAL_AUTH_USER_MODEL = 'auth.User'
 SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
 
-LOGIN_URL = '/login/google-oauth2'
+LOGIN_URL = '/login/google-oauth2/'
 LOGIN_ERROR_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 

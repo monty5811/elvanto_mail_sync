@@ -1,5 +1,4 @@
 import json
-
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import View
@@ -21,7 +20,7 @@ class IsAuthedAPIView(APIView):
 
 class UpdateGlobal(IsAuthedAPIView):
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body.decode())
+        data = request.data
         p_id = data.get('pk')
         disable_entirely = data.get('disable')
         assert type(disable_entirely) is bool
@@ -36,7 +35,7 @@ class UpdateGlobal(IsAuthedAPIView):
 
 class UpdateLocal(IsAuthedAPIView):
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body.decode())
+        data = request.data
         p_id = data.get('p_id')
         g_id = data.get('g_id')
         disable_boolean = data.get('disable')
@@ -58,7 +57,7 @@ class UpdateLocal(IsAuthedAPIView):
 
 class UpdateSync(IsAuthedAPIView):
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body.decode())
+        data = request.data
         pk = data.get('pk')
         sync_boolean = data.get('push_auto')
         assert type(sync_boolean) is bool
