@@ -62,7 +62,7 @@ submitPushAllRequest model =
 
 submitPullAllRequest : Model -> Cmd Msg
 submitPullAllRequest model =
-    csrfSend "/buttons/push_all/" "POST" (encodeBody []) model.csrftoken
+    csrfSend "/buttons/pull_all/" "POST" (encodeBody []) model.csrftoken
         |> Http.fromJson decodeAlwaysTrue
         |> Task.perform FetchError (always LoadGroups)
 
