@@ -1,10 +1,13 @@
 import json
+import logging
 
 from django.conf import settings
 from django.utils import timezone
 import requests
 
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
+
+logger = logging.getLogger('elvanto_sync')
 
 
 class ElvantoApiException(Exception):
@@ -101,6 +104,16 @@ def pull_people(api=None):
         prsn.save()
 
 
+def delete_missing_groups(data):
+    """Remove groups no longer on Elvanto."""
+    group_ids = [group['id'] for group in data['groups']['group']]
+    missing_groups = ElvantoGroup.objects.exclude(e_id__in=group_ids)
+    for grp in missing_groups:
+        logger.info('Deleting %s (%s)', grp.name, grp.e_id)
+        grp.group_members.clear()
+        grp.delete()
+
+
 def pull_groups(api=None):
     """
     Pull all elvanto groups and create entries in local db.
@@ -112,6 +125,7 @@ def pull_groups(api=None):
         'groups/getAll',
         json={'fields': ['people']},
     )
+    delete_missing_groups(data)
     for e_grp in data['groups']['group']:
         # update/create group
         grp, created = ElvantoGroup.objects.get_or_create(e_id=e_grp['id'])

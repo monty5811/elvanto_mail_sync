@@ -9,4 +9,6 @@ export G_AUTH_URI=test
 export G_TOKEN_URI=test
 export G_AUTH_PROVIDER_X509_CERT_URL=test
 export G_CLIENT_X509_CERT_URL=test
-./manage.py runserver 0.0.0.0:4000 --settings=settings.dev
+export DJANGO_SETTINGS_MODULE=settings.dev
+# ./manage.py shell_plus
+./manage.py runserver 0.0.0.0:4000

@@ -48,12 +48,12 @@ class ElvantoGroup(models.Model):
             elvanto_emails=self.elvanto_emails(),
             google_emails=api.fetch_members()
         )
-        logger.info('Emails here: [%s]', ','.join(emails.elvanto))
-        logger.info('Emails google: [%s]', ','.join(emails.google))
+        logger.debug('Emails here: [%s]', ','.join(emails.elvanto))
+        logger.debug('Emails google: [%s]', ','.join(emails.google))
         here_not_on_google = set(emails.elvanto) - set(emails.google)
-        logger.info('Here, not on google: [%s]', ','.join(here_not_on_google))
+        logger.debug('Here, not on google: [%s]', ','.join(here_not_on_google))
         on_google_not_here = set(emails.google) - set(emails.elvanto)
-        logger.info('On google, not here: [%s]', ','.join(on_google_not_here))
+        logger.debug('On google, not here: [%s]', ','.join(on_google_not_here))
 
         # update the group, we must call remove first, otherwise we may add
         # a member and then remove them due to domain aliases
@@ -96,7 +96,10 @@ class ElvantoGroup(models.Model):
 
     def group_members_entirely_disabled(self):
         """Queryset of entirely disabled people in group"""
-        return ElvantoPerson.objects.filter(disabled_entirely=True)
+        return ElvantoPerson.objects.filter(
+            elvanto_groups__in=[self],
+            disabled_entirely=True,
+        )
 
     def total_people_in_group(self):
         """Total number of people in group"""
@@ -105,9 +108,9 @@ class ElvantoGroup(models.Model):
     def total_disabled_people_in_group(self):
         """Total number of people in group that have been disabled, either
         locally or globally"""
-        disabled_ppl_in_group = list(self.group_members_disabled.all())
-        disabled_globally = list(self.group_members_entirely_disabled())
-        num_disabled = len(set(disabled_ppl_in_group + disabled_globally))
+        disabled_ppl_in_group = set(self.group_members_disabled.all())
+        disabled_globally = set(self.group_members_entirely_disabled())
+        num_disabled = len(disabled_ppl_in_group | disabled_globally)
         return num_disabled
 
     def group_member_pks(self):

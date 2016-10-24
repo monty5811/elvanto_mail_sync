@@ -68,7 +68,7 @@ class GoogleClient:
         try:
             resp.raise_for_status()
         except Exception:
-            if resp.status_code == 403 or resp.status_code == 401:
+            if resp.status_code == 401:
                 self.refresh_session_creds()
                 if attempt < 3:
                     self.make_request(url, method, data, attempt=attempt + 1)
@@ -112,7 +112,7 @@ class GoogleClient:
             if resp.status_code == 409 and attempt < 3:
                 # let's wait and retry the request
                 sleep(5)
-                self.add_member(email, attempt = attempt + 1)
+                self.add_member(url, email, attempt=attempt + 1)
             else:
                 logger.error(
                     'Could not add member',
@@ -130,14 +130,27 @@ class GoogleClient:
 
     def remove_members(self, emails):
         for email in emails:
-            url = self._member_url(email)
-            resp = self.make_request(
-                'delete',
-                url,
-            )
-            try:
-                resp.raise_for_status()
-            except Exception:
+            self.remove_member(email)
+
+    def remove_member(self, email):
+        url = self._member_url(email)
+        resp = self.make_request(
+            'delete',
+            url,
+        )
+        try:
+            resp.raise_for_status()
+        except Exception:
+            if resp.status_code == 404:
+                logger.debug(
+                    'Tried to delete member that does not exist',
+                    exc_info=True,
+                    extra={
+                        'group': self.group,
+                        'member': email,
+                    }
+                )
+            else:
                 logger.error(
                     'Could not delete member',
                     exc_info=True,

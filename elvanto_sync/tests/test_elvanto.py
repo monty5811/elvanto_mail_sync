@@ -45,6 +45,7 @@ class TestElvanto():
     def test_pull_groups(self):
         elvanto.pull_people()
         elvanto.pull_groups()
+        assert ElvantoGroup.objects.count() == 5
         grp_all = ElvantoGroup.objects.get(
             e_id='7ebd2605-d3c7-11e4-95ba-068b656294b7'
         )
@@ -64,3 +65,23 @@ class TestElvanto():
     @elvanto_vcr
     def test_refresh_pull_management_command(self):
         call_command('pull_from_elvanto')
+
+    @elvanto_vcr
+    def test_delete_old_groups(self):
+        elvanto.refresh_elvanto_data()
+        assert ElvantoGroup.objects.count() == 5
+        assert ElvantoPerson.objects.count() == 11
+        # construct synthetic elvanto data:
+        data = {
+            'groups': {
+                'group': [
+                    {
+                        'id': '7ebd2605-d3c7-11e4-95ba-068b656294b7',
+                    }
+                ]
+            }
+        }
+        elvanto.delete_missing_groups(data)
+        # check:
+        assert ElvantoGroup.objects.count() == 1
+        assert ElvantoPerson.objects.count() == 11
