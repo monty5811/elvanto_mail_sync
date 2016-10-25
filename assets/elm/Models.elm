@@ -71,7 +71,6 @@ type alias ElvantoGroup =
     , push_auto : Bool
     , last_pushed : Maybe String
     , last_pulled : Maybe String
-    , total_disabled_people_in_group : Int
     , people : List Int
     }
 
@@ -95,7 +94,7 @@ type alias Groups =
 
 nullGroup : ElvantoGroup
 nullGroup =
-    ElvantoGroup 0 "" Nothing False Nothing Nothing 0 []
+    ElvantoGroup 0 "" Nothing False Nothing Nothing []
 
 
 nullRegex : Regex.Regex

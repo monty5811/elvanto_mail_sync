@@ -1,7 +1,8 @@
 module Helpers exposing (..)
 
-import Regex
 import Models exposing (..)
+import Regex
+import Set exposing (Set)
 
 
 filterRecord : Regex.Regex -> a -> Bool
@@ -9,14 +10,9 @@ filterRecord regex record =
     Regex.contains regex (toString record)
 
 
-isPk : Int -> Int -> Bool
-isPk pk1 pk2 =
-    pk1 == pk2
-
-
 getCurrentGroup : Groups -> Int -> ElvantoGroup
 getCurrentGroup groups pk =
-    List.filter (\x -> (isPk pk x.pk)) groups
+    List.filter (\x -> pk == x.pk) groups
         |> List.head
         |> Maybe.withDefault nullGroup
 
@@ -50,3 +46,23 @@ getGroupPushAuto : Model -> Int -> Bool
 getGroupPushAuto model pk =
     getCurrentGroup model.groups pk
         |> .push_auto
+
+
+numDisabledPeople : ElvantoGroup -> People -> Int
+numDisabledPeople group people =
+    let
+        peopleInGroup =
+            getCurrentPeople people group
+
+        globally_disabled =
+            peopleInGroup
+                |> List.filter (\x -> x.disabled_entirely)
+                |> List.map (\x -> x.pk)
+
+        locally_disabled =
+            peopleInGroup
+                |> List.filter (\person -> List.member group.pk person.disabled_groups)
+                |> List.map (\x -> x.pk)
+    in
+        Set.fromList (List.concat [ globally_disabled, locally_disabled ])
+            |> Set.size

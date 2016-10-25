@@ -20,7 +20,6 @@ groupDecoder =
         |> required "push_auto" Decode.bool
         |> required "last_pushed" (Decode.maybe Decode.string)
         |> required "last_pulled" (Decode.maybe Decode.string)
-        |> required "total_disabled_people_in_group" Decode.int
         |> required "people_pks" (Decode.list Decode.int)
 
 

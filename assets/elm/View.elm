@@ -4,7 +4,6 @@ import Actions exposing (..)
 import GroupViews exposing (groupView)
 import Helpers exposing (..)
 import Html exposing (..)
-import Html.Lazy exposing (lazy)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onWithOptions)
 import Json.Decode as Json
@@ -127,23 +126,18 @@ groupRows : Model -> List (Html Msg)
 groupRows model =
     model.groups
         |> List.filter (filterRecord model.groupFilter)
-        |> List.map lazyGroupRow
+        |> List.map (groupRow model.people)
 
 
-lazyGroupRow : ElvantoGroup -> Html Msg
-lazyGroupRow group =
-    lazy groupRow group
-
-
-groupRow : ElvantoGroup -> Html Msg
-groupRow group =
+groupRow : People -> ElvantoGroup -> Html Msg
+groupRow people group =
     tr []
         [ td [] [ nameLink group ]
         , td [] [ text (Maybe.withDefault "" group.google_email) ]
         , td [] [ dateCell group.last_pulled ]
         , td [] [ dateCell group.last_pushed ]
         , td [] [ text (toString (List.length group.people)) ]
-        , td [] [ text (toString group.total_disabled_people_in_group) ]
+        , td [] [ text (toString (numDisabledPeople group people)) ]
         , td [] [ syncIndicator group.push_auto ]
         ]
 

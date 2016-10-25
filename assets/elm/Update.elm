@@ -69,6 +69,7 @@ update msg model =
             ( { model
                 | groups = groups
                 , loadingProgress = 75
+                , error = False
               }
             , fetchPeople model.csrftoken
             )
@@ -80,12 +81,18 @@ update msg model =
                 , pushAutoField = getGroupPushAuto model model.activeGroupPk
                 , loadingProgress = 100
                 , firstLoadDone = True
+                , error = False
               }
             , Cmd.none
             )
 
         FetchError error ->
-            ( { model | error = True }, Cmd.none )
+            ( { model
+                | error = True
+                , firstLoadDone = False
+              }
+            , Cmd.none
+            )
 
         ToggleAutoSuccess group ->
             ( model, (fetchGroups model.csrftoken) )
@@ -97,7 +104,7 @@ update msg model =
             ( { model | formStatus = RequestFail }, Cmd.none )
 
         ToggleSuccess person ->
-            ( model, (fetchGroups model.csrftoken) )
+            ( { model | people = (replacePerson model.people person) }, Cmd.none )
 
         -- Change url
         Go path ->

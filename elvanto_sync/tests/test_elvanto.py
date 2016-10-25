@@ -54,9 +54,7 @@ class TestElvanto():
         assert 'john.owen@cambridge.com' in e_emails
         assert 'thomas.chalmers@edinburgh.com' in e_emails
 
-        assert grp_all.total_people_in_group() == 3
-        assert len(grp_all.group_members_entirely_disabled()) == 0
-        assert grp_all.total_disabled_people_in_group() == 0
+        assert grp_all.group_members.count() == 3
 
     @elvanto_vcr
     def test_refresh_data(self):

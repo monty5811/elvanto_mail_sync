@@ -94,25 +94,6 @@ class ElvantoGroup(models.Model):
             )
         )
 
-    def group_members_entirely_disabled(self):
-        """Queryset of entirely disabled people in group"""
-        return ElvantoPerson.objects.filter(
-            elvanto_groups__in=[self],
-            disabled_entirely=True,
-        )
-
-    def total_people_in_group(self):
-        """Total number of people in group"""
-        return self.group_members.all().count()
-
-    def total_disabled_people_in_group(self):
-        """Total number of people in group that have been disabled, either
-        locally or globally"""
-        disabled_ppl_in_group = set(self.group_members_disabled.all())
-        disabled_globally = set(self.group_members_entirely_disabled())
-        num_disabled = len(disabled_ppl_in_group | disabled_globally)
-        return num_disabled
-
     def group_member_pks(self):
         return self.group_members.values_list('pk', flat=True)
 

@@ -157,3 +157,17 @@ updateDisablefGroupsList groupPk state groups =
             newGroups
     else
         groupPk :: groups
+
+
+replacePerson : People -> ElvantoPerson -> People
+replacePerson people person =
+    people
+        |> List.map (updatePerson person)
+
+
+updatePerson : ElvantoPerson -> ElvantoPerson -> ElvantoPerson
+updatePerson newPerson oldPerson =
+    if newPerson.pk == oldPerson.pk then
+        newPerson
+    else
+        oldPerson

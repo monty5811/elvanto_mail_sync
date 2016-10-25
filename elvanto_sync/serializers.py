@@ -22,7 +22,6 @@ class ElvantoPersonSerializer(serializers.ModelSerializer):
 
 
 class ElvantoGroupSerializer(serializers.ModelSerializer):
-    total_disabled_people_in_group = serializers.IntegerField(required=False)
     last_pulled = serializers.DateTimeField(
         format='%d %b %H:%M', required=False
     )
@@ -42,6 +41,5 @@ class ElvantoGroupSerializer(serializers.ModelSerializer):
             'push_auto',
             "last_pushed",
             "last_pulled",
-            'total_disabled_people_in_group',
             'people_pks',
         )
