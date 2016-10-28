@@ -4,6 +4,7 @@ import Json.Decode as Decode exposing ((:=), maybe)
 import Json.Decode.Pipeline exposing (optional, required, decode)
 import Json.Encode as Encode
 import Models exposing (..)
+import ElvantoModels exposing (..)
 
 
 apply : Decode.Decoder (a -> b) -> Decode.Decoder a -> Decode.Decoder b
@@ -16,21 +17,21 @@ groupDecoder =
     decode ElvantoGroup
         |> required "pk" Decode.int
         |> required "name" Decode.string
-        |> required "google_email" (Decode.maybe Decode.string)
-        |> required "push_auto" Decode.bool
-        |> required "last_pushed" (Decode.maybe Decode.string)
-        |> required "last_pulled" (Decode.maybe Decode.string)
-        |> required "people_pks" (Decode.list Decode.int)
+        |> required "googleEmail" (Decode.maybe Decode.string)
+        |> required "pushAuto" Decode.bool
+        |> required "lastPushed" (Decode.maybe Decode.string)
+        |> required "lastPulled" (Decode.maybe Decode.string)
+        |> required "peoplePks" (Decode.list Decode.int)
 
 
 personDecoder : Decode.Decoder ElvantoPerson
 personDecoder =
     Decode.object5 ElvantoPerson
         ("email" := Decode.string)
-        ("full_name" := Decode.string)
+        ("fullName" := Decode.string)
         ("pk" := Decode.int)
-        ("disabled_entirely" := Decode.bool)
-        ("disabled_groups" := Decode.list Decode.int)
+        ("disabledEntirely" := Decode.bool)
+        ("disabledGroups" := Decode.list Decode.int)
 
 
 decodeAlwaysTrue : Decode.Decoder Bool

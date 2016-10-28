@@ -4,42 +4,46 @@ from elvanto_sync.models import ElvantoGroup, ElvantoPerson
 
 
 class ElvantoPersonSerializer(serializers.ModelSerializer):
-    full_name = serializers.CharField()
-    disabled_groups = serializers.SerializerMethodField()
+    fullName = serializers.CharField(source='full_name')
+    disabledEntirely = serializers.BooleanField(source='disabled_entirely')
+    disabledGroups = serializers.SerializerMethodField()
 
-    def get_disabled_groups(self, instance):
+    def get_disabledGroups(self, instance):
         return instance.disabled_groups.all().values_list('pk', flat=True)
 
     class Meta:
         model = ElvantoPerson
         fields = (
-            'full_name',
+            'fullName',
             'email',
             'pk',
-            'disabled_entirely',
-            'disabled_groups',
+            'disabledEntirely',
+            'disabledGroups',
         )
 
 
 class ElvantoGroupSerializer(serializers.ModelSerializer):
-    last_pulled = serializers.DateTimeField(
+    lastPulled = serializers.DateTimeField(
+        source='last_pulled',
         format='%d %b %H:%M', required=False
     )
-    last_pushed = serializers.DateTimeField(
+    lastPushed = serializers.DateTimeField(
+        source='last_pushed',
         format='%d %b %H:%M', required=False
     )
     name = serializers.CharField(required=False)
-    people_pks = serializers.ReadOnlyField(source='group_member_pks')
-    push_auto = serializers.BooleanField(required=False)
+    googleEmail = serializers.EmailField(source='google_email')
+    peoplePks = serializers.ReadOnlyField(source='group_member_pks')
+    pushAuto = serializers.BooleanField(required=False, source='push_auto')
 
     class Meta:
         model = ElvantoGroup
         fields = (
             'name',
-            'google_email',
+            'googleEmail',
             'pk',
-            'push_auto',
-            "last_pushed",
-            "last_pulled",
-            'people_pks',
+            'pushAuto',
+            "lastPushed",
+            "lastPulled",
+            'peoplePks',
         )

@@ -8,6 +8,7 @@ import Actions exposing (..)
 import Helpers exposing (..)
 import Messages exposing (..)
 import Models exposing (..)
+import ElvantoModels exposing (..)
 
 
 groupView : Model -> Html Msg
@@ -84,7 +85,7 @@ groupTableView group people personFilter =
                 , tbody []
                     (people
                         |> List.filter (filterRecord personFilter)
-                        |> List.map (personRow group.pk)
+                        |> List.map (personRow group)
                     )
                 ]
             ]
@@ -129,31 +130,31 @@ emailForm model group =
         ]
 
 
-personRow : Int -> ElvantoPerson -> Html Msg
-personRow pk person =
+personRow : ElvantoGroup -> ElvantoPerson -> Html Msg
+personRow group person =
     tr []
-        [ td [] [ text person.full_name ]
+        [ td [] [ text person.fullName ]
         , td [] [ text person.email ]
-        , td [] [ disableGroupButton pk person ]
+        , td [] [ disableGroupButton group person ]
         , td [] [ disableEntirelyButton person ]
         ]
 
 
-disableGroupButton : Int -> ElvantoPerson -> Html Msg
-disableGroupButton pk person =
+disableGroupButton : ElvantoGroup -> ElvantoPerson -> Html Msg
+disableGroupButton group person =
     let
         disabled =
-            List.member pk person.disabled_groups
+            List.member group.pk person.disabledGroups
     in
-        if (disabled) then
-            button [ class "btn btn-danger btn-sm", onClick (ToggleLocal pk person.pk disabled) ] [ text "Disabled" ]
+        if disabled then
+            button [ class "btn btn-danger btn-sm", onClick (ToggleLocal group.pk person.pk disabled) ] [ text "Disabled" ]
         else
-            button [ class "btn btn-success btn-sm", onClick (ToggleLocal pk person.pk disabled) ] [ text "Enabled" ]
+            button [ class "btn btn-success btn-sm", onClick (ToggleLocal group.pk person.pk disabled) ] [ text "Enabled" ]
 
 
 disableEntirelyButton : ElvantoPerson -> Html Msg
 disableEntirelyButton person =
-    if person.disabled_entirely then
-        button [ class "btn btn-danger btn-sm", onClick (ToggleGlobal person.pk person.disabled_entirely) ] [ text "Disabled" ]
+    if person.disabledEntirely then
+        button [ class "btn btn-danger btn-sm", onClick (ToggleGlobal person.pk person.disabledEntirely) ] [ text "Disabled" ]
     else
-        button [ class "btn btn-success btn-sm", onClick (ToggleGlobal person.pk person.disabled_entirely) ] [ text "Enabled" ]
+        button [ class "btn btn-success btn-sm", onClick (ToggleGlobal person.pk person.disabledEntirely) ] [ text "Enabled" ]

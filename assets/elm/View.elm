@@ -10,6 +10,7 @@ import Json.Decode as Json
 import Messages exposing (..)
 import Models exposing (..)
 import Nav.Models exposing (..)
+import ElvantoModels exposing (..)
 
 
 view : Model -> Html Msg
@@ -133,18 +134,18 @@ groupRow : People -> ElvantoGroup -> Html Msg
 groupRow people group =
     tr []
         [ td [] [ nameLink group ]
-        , td [] [ text (Maybe.withDefault "" group.google_email) ]
-        , td [] [ dateCell group.last_pulled ]
-        , td [] [ dateCell group.last_pushed ]
+        , td [] [ text (Maybe.withDefault "" group.googleEmail) ]
+        , td [] [ dateCell group.lastPulled ]
+        , td [] [ dateCell group.lastPushed ]
         , td [] [ text (toString (List.length group.people)) ]
         , td [] [ text (toString (numDisabledPeople group people)) ]
-        , td [] [ syncIndicator group.push_auto ]
+        , td [] [ syncIndicator group.pushAuto ]
         ]
 
 
 nameLink : ElvantoGroup -> Html Msg
 nameLink group =
-    a [ href "", onClick (ShowGroup group.pk group.google_email group.push_auto) ] [ text group.name ]
+    a [ href "", onClick (ShowGroup group) ] [ text group.name ]
 
 
 syncIndicator : Bool -> Html Msg

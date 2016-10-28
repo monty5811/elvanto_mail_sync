@@ -2,6 +2,7 @@ module Encoders exposing (..)
 
 import Http
 import Json.Encode as Encode
+import ElvantoModels exposing (GroupPk, PersonPk)
 
 
 encodeBody : List ( String, Encode.Value ) -> Http.Body
@@ -12,19 +13,19 @@ encodeBody data =
         |> Http.string
 
 
-toggleSyncBody : Int -> Bool -> Http.Body
+toggleSyncBody : GroupPk -> Bool -> Http.Body
 toggleSyncBody pk state =
     [ ( "pk", Encode.int pk ), ( "push_auto", Encode.bool (not state) ) ]
         |> encodeBody
 
 
-toggleGlobalBody : Int -> Bool -> Http.Body
+toggleGlobalBody : PersonPk -> Bool -> Http.Body
 toggleGlobalBody pk state =
     [ ( "pk", Encode.int pk ), ( "disable", Encode.bool (not state) ) ]
         |> encodeBody
 
 
-toggleLocalBody : Int -> Int -> Bool -> Http.Body
+toggleLocalBody : PersonPk -> GroupPk -> Bool -> Http.Body
 toggleLocalBody pPk gPk state =
     [ ( "p_id", Encode.int pPk )
     , ( "g_id", Encode.int gPk )
@@ -41,7 +42,7 @@ submitFormBody emailField pushAutoField =
         |> encodeBody
 
 
-pushRequestBody : Int -> Http.Body
+pushRequestBody : GroupPk -> Http.Body
 pushRequestBody pk =
     [ ( "g_id", Encode.int pk ) ]
         |> encodeBody

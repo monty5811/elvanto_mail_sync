@@ -166,7 +166,7 @@ class TestUrls():
         geneva = ElvantoGroup.objects.get(name='Geneva')
         assert not geneva.google_email
         # send button request
-        post_data = {'google_email': 'test@example.com'}
+        post_data = {'googleEmail': 'test@example.com'}
         resp = clients['c_in'].generic(
             'POST',
             reverse(

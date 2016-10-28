@@ -3,6 +3,7 @@ module Helpers exposing (..)
 import Models exposing (..)
 import Regex
 import Set exposing (Set)
+import ElvantoModels exposing (..)
 
 
 filterRecord : Regex.Regex -> a -> Bool
@@ -35,17 +36,17 @@ textToRegex text =
         |> Regex.caseInsensitive
 
 
-getGroupEmail : Model -> Int -> String
-getGroupEmail model pk =
-    getCurrentGroup model.groups pk
-        |> .google_email
+getGroupEmail : Groups -> Int -> String
+getGroupEmail groups pk =
+    getCurrentGroup groups pk
+        |> .googleEmail
         |> Maybe.withDefault ""
 
 
-getGroupPushAuto : Model -> Int -> Bool
-getGroupPushAuto model pk =
-    getCurrentGroup model.groups pk
-        |> .push_auto
+getGroupPushAuto : Groups -> Int -> Bool
+getGroupPushAuto groups pk =
+    getCurrentGroup groups pk
+        |> .pushAuto
 
 
 numDisabledPeople : ElvantoGroup -> People -> Int
@@ -54,15 +55,15 @@ numDisabledPeople group people =
         peopleInGroup =
             getCurrentPeople people group
 
-        globally_disabled =
+        globallyDisabled =
             peopleInGroup
-                |> List.filter (\x -> x.disabled_entirely)
+                |> List.filter (\x -> x.disabledEntirely)
                 |> List.map (\x -> x.pk)
 
-        locally_disabled =
+        locallyDisabled =
             peopleInGroup
-                |> List.filter (\person -> List.member group.pk person.disabled_groups)
+                |> List.filter (\person -> List.member group.pk person.disabledGroups)
                 |> List.map (\x -> x.pk)
     in
-        Set.fromList (List.concat [ globally_disabled, locally_disabled ])
+        Set.fromList (List.concat [ globallyDisabled, locallyDisabled ])
             |> Set.size

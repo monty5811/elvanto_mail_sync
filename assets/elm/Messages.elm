@@ -3,6 +3,7 @@ module Messages exposing (..)
 import Http
 import Window exposing (Size)
 import Models exposing (..)
+import ElvantoModels exposing (..)
 
 
 -- MESSAGES
@@ -18,14 +19,14 @@ type Msg
     | FetchPeopleSuccess People
     | FetchError Http.Error
     | ToggleGlobal Int Bool
-    | ToggleLocal Int Int Bool
+    | ToggleLocal GroupPk PersonPk Bool
     | ToggleSuccess ElvantoPerson
-    | ToggleAuto Int Bool
+    | ToggleAuto GroupPk Bool
     | ToggleAutoSuccess ElvantoGroup
     | PushNow
     | PullAllNow
     | PushAllNow
-    | ShowGroup Int (Maybe String) Bool
+    | ShowGroup ElvantoGroup
     | HideGroup
     | FormSubmit Model
     | FormSubmitError Http.Error

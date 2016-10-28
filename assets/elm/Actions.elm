@@ -10,6 +10,7 @@ import Encoders exposing (..)
 import Helpers exposing (..)
 import Messages exposing (..)
 import Models exposing (..)
+import ElvantoModels exposing (..)
 
 
 -- Initial window size
@@ -71,7 +72,7 @@ submitPullAllRequest model =
 -- Group specific actions
 
 
-toggleAutoSync : Int -> Bool -> CSRFToken -> Cmd Msg
+toggleAutoSync : GroupPk -> Bool -> CSRFToken -> Cmd Msg
 toggleAutoSync pk state csrftoken =
     csrfSend "/buttons/update_sync/" "POST" (toggleSyncBody pk state) csrftoken
         |> Http.fromJson groupDecoder
@@ -107,67 +108,72 @@ submitPushRequest model =
 -- Person specific actions
 
 
-toggleGlobal : Int -> Bool -> CSRFToken -> Cmd Msg
+toggleGlobal : PersonPk -> Bool -> CSRFToken -> Cmd Msg
 toggleGlobal pk state csrftoken =
     csrfSend "/buttons/update_global/" "POST" (toggleGlobalBody pk state) csrftoken
         |> Http.fromJson personDecoder
         |> Task.perform FetchError ToggleSuccess
 
 
-optUpdateGlobal : Model -> Int -> Bool -> Model
-optUpdateGlobal model pk state =
-    { model | people = (List.map (updateGlobal pk state) model.people) }
+optUpdateGlobal : People -> PersonPk -> Bool -> People
+optUpdateGlobal people pk state =
+    people
+        |> List.map (updateGlobal pk state)
 
 
-updateGlobal : Int -> Bool -> ElvantoPerson -> ElvantoPerson
+updateGlobal : PersonPk -> Bool -> ElvantoPerson -> ElvantoPerson
 updateGlobal pk state person =
     if person.pk == pk then
-        { person | disabled_entirely = (not state) }
+        { person | disabledEntirely = (not state) }
     else
         person
 
 
-toggleLocal : Int -> Int -> Bool -> CSRFToken -> Cmd Msg
+toggleLocal : GroupPk -> PersonPk -> Bool -> CSRFToken -> Cmd Msg
 toggleLocal gPk pPk state csrftoken =
     csrfSend "/buttons/update_local/" "POST" (toggleLocalBody pPk gPk state) csrftoken
         |> Http.fromJson personDecoder
         |> Task.perform FetchError ToggleSuccess
 
 
-optUpdateLocal : Model -> Int -> Int -> Bool -> Model
-optUpdateLocal model groupPk personPk state =
-    { model | people = (List.map (updateLocal groupPk personPk state) model.people) }
+optUpdateLocal : People -> GroupPk -> PersonPk -> Bool -> People
+optUpdateLocal people groupPk personPk state =
+    people
+        |> List.map (updateLocal groupPk personPk state)
 
 
-updateLocal : Int -> Int -> Bool -> ElvantoPerson -> ElvantoPerson
+updateLocal : GroupPk -> PersonPk -> Bool -> ElvantoPerson -> ElvantoPerson
 updateLocal groupPk personPk state person =
     if person.pk == personPk then
-        { person | disabled_groups = (updateDisablefGroupsList groupPk state person.disabled_groups) }
+        { person
+            | disabledGroups = (updateDisabledGroupsList groupPk state person.disabledGroups)
+        }
     else
         person
 
 
-updateDisablefGroupsList : Int -> Bool -> List Int -> List Int
-updateDisablefGroupsList groupPk state groups =
+updateDisabledGroupsList : GroupPk -> Bool -> List GroupPk -> List GroupPk
+updateDisabledGroupsList groupPk state groups =
     if state then
         let
             ( _, newGroups ) =
-                (List.partition (isPk groupPk) groups)
+                groups
+                    |> List.partition (\pk -> pk == groupPk)
         in
             newGroups
     else
         groupPk :: groups
 
 
-replacePerson : People -> ElvantoPerson -> People
-replacePerson people person =
-    people
-        |> List.map (updatePerson person)
+replaceRecordByPk : List { a | pk : Int } -> { a | pk : Int } -> List { a | pk : Int }
+replaceRecordByPk objs updated =
+    objs
+        |> List.map (updateObj updated)
 
 
-updatePerson : ElvantoPerson -> ElvantoPerson -> ElvantoPerson
-updatePerson newPerson oldPerson =
-    if newPerson.pk == oldPerson.pk then
-        newPerson
+updateObj : { a | pk : Int } -> { a | pk : Int } -> { a | pk : Int }
+updateObj newObj oldObj =
+    if newObj.pk == oldObj.pk then
+        newObj
     else
-        oldPerson
+        oldObj

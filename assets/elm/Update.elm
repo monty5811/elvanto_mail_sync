@@ -7,9 +7,9 @@ import DjangoSend exposing (csrfSend, CSRFToken)
 import Helpers exposing (..)
 import Messages exposing (..)
 import Models exposing (..)
+import ElvantoModels exposing (..)
 import Nav.Models exposing (Page(..))
 import Nav.Parser exposing (toPath, urlParser)
-import Debug
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -22,49 +22,6 @@ update msg model =
         LoadGroups ->
             ( model, (fetchGroups model.csrftoken) )
 
-        LoadPeople ->
-            ( model, (fetchPeople model.csrftoken) )
-
-        -- Main page updates
-        PullAllNow ->
-            ( { model | pullAllStatus = Clicked }, (submitPullAllRequest model) )
-
-        PushAllNow ->
-            ( { model | pushAllStatus = Clicked }, (submitPushAllRequest model) )
-
-        ShowGroup pk email pushAuto ->
-            ( model, Navigation.newUrl (toPath (Group pk)) )
-
-        UpdateGroupFilter filterText ->
-            ( { model | groupFilter = (textToRegex filterText) }, Cmd.none )
-
-        -- Group page updates
-        HideGroup ->
-            ( model, Navigation.newUrl (toPath Home) )
-
-        PushNow ->
-            ( { model | pushGroupStatus = Clicked }, (submitPushRequest model) )
-
-        ToggleAuto groupPk state ->
-            ( { model | pushAutoField = (not state) }, (toggleAutoSync groupPk state model.csrftoken) )
-
-        FormEmailChange email ->
-            ( { model | emailField = email }, Cmd.none )
-
-        FormSubmit model ->
-            ( { model | formStatus = RequestSent }, (submitForm model) )
-
-        UpdatePersonFilter filterText ->
-            ( { model | personFilter = (textToRegex filterText) }, Cmd.none )
-
-        -- Group table updates
-        ToggleGlobal pk state ->
-            ( (optUpdateGlobal model pk state), (toggleGlobal pk state model.csrftoken) )
-
-        ToggleLocal groupPk personPk state ->
-            ( (optUpdateLocal model groupPk personPk state), (toggleLocal groupPk personPk state model.csrftoken) )
-
-        -- Http result updates
         FetchGroupsSuccess groups ->
             ( { model
                 | groups = groups
@@ -74,11 +31,14 @@ update msg model =
             , fetchPeople model.csrftoken
             )
 
+        LoadPeople ->
+            ( model, (fetchPeople model.csrftoken) )
+
         FetchPeopleSuccess people ->
             ( { model
                 | people = people
-                , emailField = getGroupEmail model model.activeGroupPk
-                , pushAutoField = getGroupPushAuto model model.activeGroupPk
+                , emailField = getGroupEmail model.groups model.activeGroupPk
+                , pushAutoField = getGroupPushAuto model.groups model.activeGroupPk
                 , loadingProgress = 100
                 , firstLoadDone = True
                 , error = False
@@ -94,8 +54,37 @@ update msg model =
             , Cmd.none
             )
 
+        -- Main page updates
+        PullAllNow ->
+            ( { model | pullAllStatus = Clicked }, (submitPullAllRequest model) )
+
+        PushAllNow ->
+            ( { model | pushAllStatus = Clicked }, (submitPushAllRequest model) )
+
+        ShowGroup group ->
+            ( model, Navigation.newUrl (toPath (Group group.pk)) )
+
+        UpdateGroupFilter filterText ->
+            ( { model | groupFilter = (textToRegex filterText) }, Cmd.none )
+
+        -- Group page updates
+        HideGroup ->
+            ( model, Navigation.newUrl (toPath Home) )
+
+        PushNow ->
+            ( { model | pushGroupStatus = Clicked }, (submitPushRequest model) )
+
+        ToggleAuto groupPk state ->
+            ( { model | pushAutoField = (not state) }, (toggleAutoSync groupPk state model.csrftoken) )
+
         ToggleAutoSuccess group ->
-            ( model, (fetchGroups model.csrftoken) )
+            ( { model | groups = replaceRecordByPk model.groups group }, Cmd.none )
+
+        FormEmailChange email ->
+            ( { model | emailField = email }, Cmd.none )
+
+        FormSubmit model ->
+            ( { model | formStatus = RequestSent }, (submitForm model) )
 
         FormSubmitSuccess arg ->
             ( { model | formStatus = RequestSuccess }, (fetchGroups model.csrftoken) )
@@ -103,8 +92,24 @@ update msg model =
         FormSubmitError error ->
             ( { model | formStatus = RequestFail }, Cmd.none )
 
+        UpdatePersonFilter filterText ->
+            ( { model | personFilter = (textToRegex filterText) }, Cmd.none )
+
+        -- Group table updates
+        ToggleGlobal pk state ->
+            ( { model | people = optUpdateGlobal model.people pk state }
+            , (toggleGlobal pk state model.csrftoken)
+            )
+
+        ToggleLocal gPk pPk state ->
+            ( { model
+                | people = optUpdateLocal model.people gPk pPk state
+              }
+            , (toggleLocal gPk pPk state model.csrftoken)
+            )
+
         ToggleSuccess person ->
-            ( { model | people = (replacePerson model.people person) }, Cmd.none )
+            ( { model | people = (replaceRecordByPk model.people person) }, Cmd.none )
 
         -- Change url
         Go path ->
