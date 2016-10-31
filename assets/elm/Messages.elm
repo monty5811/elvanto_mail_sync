@@ -11,8 +11,7 @@ import ElvantoModels exposing (..)
 
 type Msg
     = NoOp
-    | LoadGroups
-    | LoadPeople
+    | LoadData
     | UpdateGroupFilter String
     | UpdatePersonFilter String
     | FetchGroupsSuccess Groups
@@ -32,5 +31,4 @@ type Msg
     | FormSubmitError Http.Error
     | FormSubmitSuccess ElvantoGroup
     | FormEmailChange String
-    | Go String
     | WinResize Size

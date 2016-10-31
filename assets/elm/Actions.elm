@@ -3,6 +3,7 @@ module Actions exposing (..)
 import Task exposing (Task)
 import Http
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Window
 import DjangoSend exposing (csrfSend, CSRFToken)
 import Decoders exposing (..)
@@ -11,6 +12,7 @@ import Helpers exposing (..)
 import Messages exposing (..)
 import Models exposing (..)
 import ElvantoModels exposing (..)
+import Cache exposing (saveGroups)
 
 
 -- Initial window size
@@ -27,13 +29,18 @@ getWinSize =
 
 pageLoadInit : Model -> Cmd Msg
 pageLoadInit model =
-    if List.isEmpty model.groups then
+    if model.firstPageLoad then
         Cmd.batch
             [ getWinSize
-            , fetchGroups model.csrftoken
+            , fetchData model.csrftoken
             ]
     else
         Cmd.none
+
+
+fetchData : CSRFToken -> Cmd Msg
+fetchData csrftoken =
+    Cmd.batch [ fetchGroups csrftoken, fetchPeople csrftoken ]
 
 
 fetchGroups : CSRFToken -> Cmd Msg
@@ -58,14 +65,14 @@ submitPushAllRequest : Model -> Cmd Msg
 submitPushAllRequest model =
     csrfSend "/buttons/push_all/" "POST" (encodeBody []) model.csrftoken
         |> Http.fromJson decodeAlwaysTrue
-        |> Task.perform FetchError (always LoadGroups)
+        |> Task.perform FetchError (always LoadData)
 
 
 submitPullAllRequest : Model -> Cmd Msg
 submitPullAllRequest model =
     csrfSend "/buttons/pull_all/" "POST" (encodeBody []) model.csrftoken
         |> Http.fromJson decodeAlwaysTrue
-        |> Task.perform FetchError (always LoadGroups)
+        |> Task.perform FetchError (always LoadData)
 
 
 
@@ -101,7 +108,7 @@ submitPushRequest model =
     in
         csrfSend "/buttons/push_group/" "POST" body model.csrftoken
             |> Http.fromJson decodeAlwaysTrue
-            |> Task.perform FetchError (always LoadGroups)
+            |> Task.perform FetchError (always LoadData)
 
 
 

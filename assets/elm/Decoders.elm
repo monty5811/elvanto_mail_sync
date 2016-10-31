@@ -3,7 +3,6 @@ module Decoders exposing (..)
 import Json.Decode as Decode exposing ((:=), maybe)
 import Json.Decode.Pipeline exposing (optional, required, decode)
 import Json.Encode as Encode
-import Models exposing (..)
 import ElvantoModels exposing (..)
 
 

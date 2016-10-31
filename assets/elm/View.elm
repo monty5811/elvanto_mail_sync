@@ -28,9 +28,7 @@ view model =
 
 loadingIndicator : Model -> Html Msg
 loadingIndicator model =
-    if model.firstLoadDone then
-        div [] []
-    else
+    if model.firstPageLoad && List.isEmpty model.groups then
         div
             [ class "pos-f-t"
             , style
@@ -48,7 +46,7 @@ loadingIndicator model =
                 [ div [ class "text-xs-center" ] [ text "Loading" ]
                 , progress
                     [ class "progress progress-success"
-                    , value (toString model.loadingProgress)
+                    , value (toString (model.peopleLoadingProgress + model.groupsLoadingProgress))
                     , Html.Attributes.max "100"
                     ]
                     []
@@ -63,6 +61,8 @@ loadingIndicator model =
                 ]
                 []
             ]
+    else
+        div [] []
 
 
 errorView : Html Msg

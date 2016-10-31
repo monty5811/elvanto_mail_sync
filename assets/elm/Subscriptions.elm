@@ -10,6 +10,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Time.every minute
-            (\t -> LoadGroups)
+            (\t -> LoadData)
         , Window.resizes WinResize
         ]

@@ -10,6 +10,7 @@ import Models exposing (..)
 import ElvantoModels exposing (..)
 import Nav.Models exposing (Page(..))
 import Nav.Parser exposing (toPath, urlParser)
+import Cache exposing (..)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -19,37 +20,36 @@ update msg model =
             ( model, Cmd.none )
 
         -- Load data
-        LoadGroups ->
-            ( model, (fetchGroups model.csrftoken) )
+        LoadData ->
+            ( model, (fetchData model.csrftoken) )
 
         FetchGroupsSuccess groups ->
             ( { model
                 | groups = groups
-                , loadingProgress = 75
+                , groupsLoadingProgress = 50
                 , error = False
               }
-            , fetchPeople model.csrftoken
+            , saveGroups groups
             )
-
-        LoadPeople ->
-            ( model, (fetchPeople model.csrftoken) )
 
         FetchPeopleSuccess people ->
             ( { model
                 | people = people
                 , emailField = getGroupEmail model.groups model.activeGroupPk
                 , pushAutoField = getGroupPushAuto model.groups model.activeGroupPk
-                , loadingProgress = 100
-                , firstLoadDone = True
+                , peopleLoadingProgress = 50
+                , firstPageLoad = False
                 , error = False
               }
-            , Cmd.none
+            , savePeople people
             )
 
         FetchError error ->
             ( { model
                 | error = True
-                , firstLoadDone = False
+                , firstPageLoad = True
+                , groupsLoadingProgress = 0
+                , peopleLoadingProgress = 0
               }
             , Cmd.none
             )
@@ -87,7 +87,7 @@ update msg model =
             ( { model | formStatus = RequestSent }, (submitForm model) )
 
         FormSubmitSuccess arg ->
-            ( { model | formStatus = RequestSuccess }, (fetchGroups model.csrftoken) )
+            ( { model | formStatus = RequestSuccess }, (fetchData model.csrftoken) )
 
         FormSubmitError error ->
             ( { model | formStatus = RequestFail }, Cmd.none )
@@ -110,10 +110,6 @@ update msg model =
 
         ToggleSuccess person ->
             ( { model | people = (replaceRecordByPk model.people person) }, Cmd.none )
-
-        -- Change url
-        Go path ->
-            ( model, Navigation.newUrl path )
 
         -- Window size
         WinResize size ->
