@@ -36,8 +36,8 @@ toggleLocalBody pPk gPk state =
 
 submitFormBody : String -> Bool -> Http.Body
 submitFormBody emailField pushAutoField =
-    [ ( "google_email", Encode.string emailField )
-    , ( "push_auto", Encode.bool pushAutoField )
+    [ ( "googleEmail", Encode.string emailField )
+    , ( "pushAuto", Encode.bool pushAutoField )
     ]
         |> encodeBody
 

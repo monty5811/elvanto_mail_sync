@@ -29,6 +29,7 @@ groupView model =
                 ]
             , br [] []
             , headerView group
+            , currentEmailView group
             , br [] []
             , formView model group
             , br [] []
@@ -49,6 +50,11 @@ pushGroupButton status =
 headerView : ElvantoGroup -> Html Msg
 headerView group =
     div [] [ h1 [] [ text group.name ] ]
+
+
+currentEmailView : ElvantoGroup -> Html Msg
+currentEmailView group =
+    h4 [] [ text (Maybe.withDefault "[No email set]" group.googleEmail) ]
 
 
 syncButton : ElvantoGroup -> Bool -> Html Msg
