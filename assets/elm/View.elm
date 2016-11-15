@@ -1,6 +1,7 @@
 module View exposing (view)
 
 import Actions exposing (..)
+import ElvantoModels exposing (..)
 import GroupViews exposing (groupView)
 import Helpers exposing (..)
 import Html exposing (..)
@@ -9,8 +10,6 @@ import Html.Events exposing (onInput, onWithOptions)
 import Json.Decode as Json
 import Messages exposing (..)
 import Models exposing (..)
-import Nav.Models exposing (..)
-import ElvantoModels exposing (..)
 
 
 view : Model -> Html Msg
@@ -20,49 +19,27 @@ view model =
             [ errorView
             ]
     else
-        div [ class "container" ]
+        div []
             [ loadingIndicator model
-            , mainView model
+            , div [ class "container" ] [ mainView model ]
             ]
 
 
 loadingIndicator : Model -> Html Msg
 loadingIndicator model =
-    if model.firstPageLoad && List.isEmpty model.groups then
-        div
-            [ class "pos-f-t"
-            , style
-                [ ( "min-height", (toString model.height) ++ "px" )
-                ]
+    div
+        [ style
+            [ ( "height", "3px" )
+            , ( "z-index", "100000" )
+            , ( "top", "0" )
+            , ( "position", "fixed" )
+            , ( "opacity", "1" )
+            , ( "background", "#1af184" )
+            , ( "transition", "all .3s ease" )
+            , ( "width", toString (model.peopleLoadingProgress + model.groupsLoadingProgress) ++ "%" )
             ]
-            [ div
-                [ class "pos-f-t"
-                , style
-                    [ ( "z-index", "100000" )
-                    , ( "top", toString ((round ((toFloat model.height) / 2)) - 32) ++ "px" )
-                    , ( "font-size", "32px" )
-                    ]
-                ]
-                [ div [ class "text-xs-center" ] [ text "Loading" ]
-                , progress
-                    [ class "progress progress-success"
-                    , value (toString (model.peopleLoadingProgress + model.groupsLoadingProgress))
-                    , Html.Attributes.max "100"
-                    ]
-                    []
-                ]
-            , div
-                [ class "pos-f-t"
-                , style
-                    [ ( "background-color", "#ddd" )
-                    , ( "min-height", (toString model.height) ++ "px" )
-                    , ( "opacity", ".75" )
-                    ]
-                ]
-                []
-            ]
-    else
-        div [] []
+        ]
+        []
 
 
 errorView : Html Msg
@@ -98,9 +75,10 @@ mainTable model =
             [ span [ class "input-group-addon" ] [ text "Filter" ]
             , input
                 [ class "form-control"
-                , type' "text"
+                , type_ "text"
                 , placeholder "Filter..."
                 , onInput UpdateGroupFilter
+                , id "groupfilter"
                 ]
                 []
             ]

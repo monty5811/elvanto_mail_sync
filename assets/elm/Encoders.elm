@@ -9,8 +9,7 @@ encodeBody : List ( String, Encode.Value ) -> Http.Body
 encodeBody data =
     data
         |> Encode.object
-        |> Encode.encode 0
-        |> Http.string
+        |> Http.jsonBody
 
 
 toggleSyncBody : GroupPk -> Bool -> Http.Body

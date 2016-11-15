@@ -1,9 +1,18 @@
 module Helpers exposing (..)
 
+import Dom
+import ElvantoModels exposing (..)
+import Http.Progress as Progress exposing (Progress(..))
+import Messages exposing (..)
 import Models exposing (..)
 import Regex
 import Set exposing (Set)
-import ElvantoModels exposing (..)
+import Task
+
+
+percentDone : { bytes : Int, bytesExpected : Int } -> Int
+percentDone progress =
+    round ((toFloat progress.bytes) / (toFloat progress.bytesExpected) * 50)
 
 
 filterRecord : Regex.Regex -> a -> Bool
@@ -67,3 +76,18 @@ numDisabledPeople group people =
     in
         Set.fromList (List.concat [ globallyDisabled, locallyDisabled ])
             |> Set.size
+
+
+failedRequest : Model -> Model
+failedRequest model =
+    { model
+        | error = True
+        , firstPageLoad = True
+        , groupsLoadingProgress = 0
+        , peopleLoadingProgress = 0
+    }
+
+
+focus : String -> Cmd Msg
+focus id =
+    Task.attempt (\_ -> NoOp) (Dom.focus id)

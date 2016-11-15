@@ -82,10 +82,10 @@ class PullAll(LoginRequiredMixin, View):
         return JsonResponse({})
 
 
-class PushGroup(LoginRequiredMixin, View):
+class PushGroup(IsAuthedAPIView):
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body.decode())
-        g_id = data['g_id']
+        data = request.data
+        g_id = data.get('g_id')
         grp = get_object_or_404(ElvantoGroup, pk=g_id)
         bg_push_group.delay(pk=grp.pk)
         return JsonResponse({'g_id': grp.pk})

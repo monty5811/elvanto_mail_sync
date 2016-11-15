@@ -1,10 +1,9 @@
 module Models exposing (..)
 
-import Json.Decode as Decode
-import ElvantoModels exposing (..)
 import Decoders exposing (groupDecoder)
 import DjangoSend exposing (CSRFToken)
-import Nav.Models exposing (..)
+import ElvantoModels exposing (..)
+import Json.Decode as Decode
 import Regex
 
 
@@ -18,6 +17,8 @@ type alias Flags =
 type alias Model =
     { groups : Groups
     , people : People
+    , fetchGroups : Bool
+    , fetchPeople : Bool
     , csrftoken : CSRFToken
     , error : Bool
     , activeGroupPk : GroupPk
@@ -33,7 +34,6 @@ type alias Model =
     , groupsLoadingProgress : Int
     , peopleLoadingProgress : Int
     , firstPageLoad : Bool
-    , height : Int
     }
 
 
@@ -41,6 +41,8 @@ initialModel : Flags -> Model
 initialModel flags =
     { groups = flags.groupsCache
     , people = flags.peopleCache
+    , fetchGroups = True
+    , fetchPeople = True
     , csrftoken = flags.csrftoken
     , groupFilter = nullRegex
     , personFilter = nullRegex
@@ -56,7 +58,6 @@ initialModel flags =
     , groupsLoadingProgress = 0
     , peopleLoadingProgress = 0
     , firstPageLoad = True
-    , height = 720
     }
 
 
@@ -70,3 +71,8 @@ type FormStatus
 type ButtonStatus
     = NotClicked
     | Clicked
+
+
+type Page
+    = Home
+    | Group GroupPk

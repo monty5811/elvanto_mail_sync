@@ -1,14 +1,14 @@
 module GroupViews exposing (..)
 
+import Actions exposing (..)
+import ElvantoModels exposing (..)
+import Helpers exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Regex
-import Actions exposing (..)
-import Helpers exposing (..)
 import Messages exposing (..)
 import Models exposing (..)
-import ElvantoModels exposing (..)
+import Regex
 
 
 groupView : Model -> Html Msg
@@ -72,9 +72,10 @@ groupTableView group people personFilter =
             [ span [ class "input-group-addon" ] [ text "Filter" ]
             , input
                 [ class "form-control"
-                , type' "text"
+                , type_ "text"
                 , placeholder "Filter..."
                 , onInput UpdatePersonFilter
+                , id "personfilter"
                 ]
                 []
             ]
@@ -126,7 +127,7 @@ emailForm : Model -> ElvantoGroup -> Html Msg
 emailForm model group =
     div []
         [ div [ class "form-group" ]
-            [ input [ class "form-control", id "id_google_email", attribute "maxlength" "254", name "google_email", placeholder "Google Email", type' "email", onInput FormEmailChange, value model.emailField ]
+            [ input [ class "form-control", id "id_google_email", attribute "maxlength" "254", name "google_email", placeholder "Google Email", type_ "email", onInput FormEmailChange, value model.emailField ]
                 []
             ]
         , div [ class "form-group" ]

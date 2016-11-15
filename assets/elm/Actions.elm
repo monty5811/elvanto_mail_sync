@@ -1,61 +1,16 @@
 module Actions exposing (..)
 
-import Task exposing (Task)
+import Cache exposing (saveGroups)
+import Decoders exposing (..)
+import DjangoSend exposing (post, get, CSRFToken)
+import ElvantoModels exposing (..)
+import Encoders exposing (..)
+import Helpers exposing (..)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Window
-import DjangoSend exposing (csrfSend, CSRFToken)
-import Decoders exposing (..)
-import Encoders exposing (..)
-import Helpers exposing (..)
 import Messages exposing (..)
 import Models exposing (..)
-import ElvantoModels exposing (..)
-import Cache exposing (saveGroups)
-
-
--- Initial window size
-
-
-getWinSize : Cmd Msg
-getWinSize =
-    Task.perform (\_ -> NoOp) WinResize Window.size
-
-
-
--- Fetch data from server
-
-
-pageLoadInit : Model -> Cmd Msg
-pageLoadInit model =
-    if model.firstPageLoad then
-        Cmd.batch
-            [ getWinSize
-            , fetchData model.csrftoken
-            ]
-    else
-        Cmd.none
-
-
-fetchData : CSRFToken -> Cmd Msg
-fetchData csrftoken =
-    Cmd.batch [ fetchGroups csrftoken, fetchPeople csrftoken ]
-
-
-fetchGroups : CSRFToken -> Cmd Msg
-fetchGroups csrftoken =
-    csrfSend groupsUrl "GET" Http.empty csrftoken
-        |> Http.fromJson (Decode.list groupDecoder)
-        |> Task.perform FetchError FetchGroupsSuccess
-
-
-fetchPeople : CSRFToken -> Cmd Msg
-fetchPeople csrftoken =
-    csrfSend peopleUrl "GET" Http.empty csrftoken
-        |> Http.fromJson (Decode.list personDecoder)
-        |> Task.perform FetchError FetchPeopleSuccess
-
 
 
 -- All group actions
@@ -63,16 +18,14 @@ fetchPeople csrftoken =
 
 submitPushAllRequest : Model -> Cmd Msg
 submitPushAllRequest model =
-    csrfSend "/buttons/push_all/" "POST" (encodeBody []) model.csrftoken
-        |> Http.fromJson decodeAlwaysTrue
-        |> Task.perform FetchError (always LoadData)
+    post "/buttons/push_all/" (encodeBody []) model.csrftoken decodeAlwaysTrue
+        |> Http.send (always LoadData)
 
 
 submitPullAllRequest : Model -> Cmd Msg
 submitPullAllRequest model =
-    csrfSend "/buttons/pull_all/" "POST" (encodeBody []) model.csrftoken
-        |> Http.fromJson decodeAlwaysTrue
-        |> Task.perform FetchError (always LoadData)
+    post "/buttons/pull_all/" (encodeBody []) model.csrftoken decodeAlwaysTrue
+        |> Http.send (always LoadData)
 
 
 
@@ -81,9 +34,8 @@ submitPullAllRequest model =
 
 toggleAutoSync : GroupPk -> Bool -> CSRFToken -> Cmd Msg
 toggleAutoSync pk state csrftoken =
-    csrfSend "/buttons/update_sync/" "POST" (toggleSyncBody pk state) csrftoken
-        |> Http.fromJson groupDecoder
-        |> Task.perform FetchError ToggleAutoSuccess
+    post "/buttons/update_sync/" (toggleSyncBody pk state) csrftoken groupDecoder
+        |> Http.send ToggleAutoResp
 
 
 submitForm : Model -> Cmd Msg
@@ -95,9 +47,11 @@ submitForm model =
         body =
             submitFormBody model.emailField model.pushAutoField
     in
-        csrfSend url "POST" body model.csrftoken
-            |> Http.fromJson groupDecoder
-            |> Task.perform FormSubmitError FormSubmitSuccess
+        post url
+            body
+            model.csrftoken
+            groupDecoder
+            |> Http.send FormSubmitResp
 
 
 submitPushRequest : Model -> Cmd Msg
@@ -106,9 +60,8 @@ submitPushRequest model =
         body =
             pushRequestBody model.activeGroupPk
     in
-        csrfSend "/buttons/push_group/" "POST" body model.csrftoken
-            |> Http.fromJson decodeAlwaysTrue
-            |> Task.perform FetchError (always LoadData)
+        post "/buttons/push_group/" body model.csrftoken decodeAlwaysTrue
+            |> Http.send (always LoadData)
 
 
 
@@ -117,9 +70,8 @@ submitPushRequest model =
 
 toggleGlobal : PersonPk -> Bool -> CSRFToken -> Cmd Msg
 toggleGlobal pk state csrftoken =
-    csrfSend "/buttons/update_global/" "POST" (toggleGlobalBody pk state) csrftoken
-        |> Http.fromJson personDecoder
-        |> Task.perform FetchError ToggleSuccess
+    post "/buttons/update_global/" (toggleGlobalBody pk state) csrftoken personDecoder
+        |> Http.send ToggleResp
 
 
 optUpdateGlobal : People -> PersonPk -> Bool -> People
@@ -138,9 +90,8 @@ updateGlobal pk state person =
 
 toggleLocal : GroupPk -> PersonPk -> Bool -> CSRFToken -> Cmd Msg
 toggleLocal gPk pPk state csrftoken =
-    csrfSend "/buttons/update_local/" "POST" (toggleLocalBody pPk gPk state) csrftoken
-        |> Http.fromJson personDecoder
-        |> Task.perform FetchError ToggleSuccess
+    post "/buttons/update_local/" (toggleLocalBody pPk gPk state) csrftoken personDecoder
+        |> Http.send ToggleResp
 
 
 optUpdateLocal : People -> GroupPk -> PersonPk -> Bool -> People

@@ -1,16 +1,16 @@
 module Update exposing (update)
 
-import Navigation
-import Regex
 import Actions exposing (..)
-import DjangoSend exposing (csrfSend, CSRFToken)
+import Cache exposing (..)
+import DjangoSend exposing (CSRFToken)
+import ElvantoModels exposing (..)
 import Helpers exposing (..)
+import Http.Progress as Progress exposing (Progress(..))
 import Messages exposing (..)
 import Models exposing (..)
-import ElvantoModels exposing (..)
-import Nav.Models exposing (Page(..))
-import Nav.Parser exposing (toPath, urlParser)
-import Cache exposing (..)
+import Nav exposing (toPath, urlUpdate)
+import Navigation
+import Regex
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -19,20 +19,49 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
+        UrlChange location ->
+            urlUpdate location model
+
         -- Load data
         LoadData ->
-            ( model, (fetchData model.csrftoken) )
+            ( { model
+                | fetchGroups = True
+                , groupsLoadingProgress = 0
+                , peopleLoadingProgress = 0
+                , fetchPeople = True
+              }
+            , Cmd.none
+            )
 
-        FetchGroupsSuccess groups ->
+        GetGroupProgress None ->
+            ( { model | groupsLoadingProgress = 0 }, Cmd.none )
+
+        GetGroupProgress (Some progress) ->
+            ( { model | groupsLoadingProgress = percentDone progress }, Cmd.none )
+
+        GetGroupProgress (Fail _) ->
+            ( failedRequest model, Cmd.none )
+
+        GetGroupProgress (Done groups) ->
             ( { model
                 | groups = groups
                 , groupsLoadingProgress = 50
                 , error = False
+                , fetchGroups = False
               }
             , saveGroups groups
             )
 
-        FetchPeopleSuccess people ->
+        GetPeopleProgress None ->
+            ( { model | peopleLoadingProgress = 0 }, Cmd.none )
+
+        GetPeopleProgress (Some progress) ->
+            ( { model | peopleLoadingProgress = percentDone progress }, Cmd.none )
+
+        GetPeopleProgress (Fail _) ->
+            ( failedRequest model, Cmd.none )
+
+        GetPeopleProgress (Done people) ->
             ( { model
                 | people = people
                 , emailField = getGroupEmail model.groups model.activeGroupPk
@@ -40,18 +69,9 @@ update msg model =
                 , peopleLoadingProgress = 50
                 , firstPageLoad = False
                 , error = False
+                , fetchPeople = False
               }
             , savePeople people
-            )
-
-        FetchError error ->
-            ( { model
-                | error = True
-                , firstPageLoad = True
-                , groupsLoadingProgress = 0
-                , peopleLoadingProgress = 0
-              }
-            , Cmd.none
             )
 
         -- Main page updates
@@ -77,8 +97,11 @@ update msg model =
         ToggleAuto groupPk state ->
             ( { model | pushAutoField = (not state) }, (toggleAutoSync groupPk state model.csrftoken) )
 
-        ToggleAutoSuccess group ->
+        ToggleAutoResp (Ok group) ->
             ( { model | groups = replaceRecordByPk model.groups group }, Cmd.none )
+
+        ToggleAutoResp (Err _) ->
+            ( (failedRequest model), Cmd.none )
 
         FormEmailChange email ->
             ( { model | emailField = email }, Cmd.none )
@@ -86,10 +109,10 @@ update msg model =
         FormSubmit model ->
             ( { model | formStatus = RequestSent }, (submitForm model) )
 
-        FormSubmitSuccess arg ->
-            ( { model | formStatus = RequestSuccess }, (fetchData model.csrftoken) )
+        FormSubmitResp (Ok arg) ->
+            ( { model | formStatus = RequestSuccess, fetchPeople = True, fetchGroups = True }, Cmd.none )
 
-        FormSubmitError error ->
+        FormSubmitResp (Err _) ->
             ( { model | formStatus = RequestFail }, Cmd.none )
 
         UpdatePersonFilter filterText ->
@@ -108,9 +131,8 @@ update msg model =
             , (toggleLocal gPk pPk state model.csrftoken)
             )
 
-        ToggleSuccess person ->
+        ToggleResp (Ok person) ->
             ( { model | people = (replaceRecordByPk model.people person) }, Cmd.none )
 
-        -- Window size
-        WinResize size ->
-            ( { model | height = size.height }, Cmd.none )
+        ToggleResp (Err _) ->
+            ( (failedRequest model), Cmd.none )

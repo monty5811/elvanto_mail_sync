@@ -1,27 +1,29 @@
 module Main exposing (..)
 
-import Navigation
+import Messages exposing (Msg(..))
 import Models exposing (Flags, Model, initialModel)
-import Messages exposing (Msg)
-import Nav.Models exposing (Page)
-import Nav.Update exposing (urlUpdate)
-import Nav.Parser exposing (urlParser)
+import Nav exposing (urlUpdate)
+import Navigation exposing (Location, programWithFlags)
 import Subscriptions exposing (subscriptions)
 import Update exposing (update)
 import View exposing (view)
 
 
-main : Program Flags
+main : Program Flags Model Msg
 main =
-    Navigation.programWithFlags urlParser
+    programWithFlags urlParser
         { init = init
         , view = view
         , update = update
-        , urlUpdate = urlUpdate
         , subscriptions = subscriptions
         }
 
 
-init : Flags -> Result String Page -> ( Model, Cmd Msg )
-init flags result =
-    urlUpdate result (initialModel flags)
+init : Flags -> Location -> ( Model, Cmd Msg )
+init flags location =
+    urlUpdate location (initialModel flags)
+
+
+urlParser : Location -> Msg
+urlParser location =
+    UrlChange location

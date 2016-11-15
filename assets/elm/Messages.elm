@@ -1,9 +1,10 @@
 module Messages exposing (..)
 
-import Http
-import Window exposing (Size)
-import Models exposing (..)
 import ElvantoModels exposing (..)
+import Http
+import Http.Progress as Progress exposing (Progress(..))
+import Models exposing (..)
+import Navigation exposing (Location)
 
 
 -- MESSAGES
@@ -11,24 +12,22 @@ import ElvantoModels exposing (..)
 
 type Msg
     = NoOp
+    | UrlChange Location
     | LoadData
     | UpdateGroupFilter String
     | UpdatePersonFilter String
-    | FetchGroupsSuccess Groups
-    | FetchPeopleSuccess People
-    | FetchError Http.Error
+    | GetGroupProgress (Progress Groups)
+    | GetPeopleProgress (Progress People)
     | ToggleGlobal Int Bool
     | ToggleLocal GroupPk PersonPk Bool
-    | ToggleSuccess ElvantoPerson
+    | ToggleResp (Result Http.Error ElvantoPerson)
     | ToggleAuto GroupPk Bool
-    | ToggleAutoSuccess ElvantoGroup
+    | ToggleAutoResp (Result Http.Error ElvantoGroup)
     | PushNow
     | PullAllNow
     | PushAllNow
     | ShowGroup ElvantoGroup
     | HideGroup
     | FormSubmit Model
-    | FormSubmitError Http.Error
-    | FormSubmitSuccess ElvantoGroup
+    | FormSubmitResp (Result Http.Error ElvantoGroup)
     | FormEmailChange String
-    | WinResize Size

@@ -1,6 +1,5 @@
 module ElvantoModels exposing (..)
 
-import DjangoSend exposing (CSRFToken)
 import Regex
 
 
