@@ -45,7 +45,7 @@ update msg model =
         GetGroupProgress (Done groups) ->
             ( { model
                 | groups = groups
-                , groupsLoadingProgress = 50
+                , groupsLoadingProgress = 100
                 , error = False
                 , fetchGroups = False
               }
@@ -66,7 +66,7 @@ update msg model =
                 | people = people
                 , emailField = getGroupEmail model.groups model.activeGroupPk
                 , pushAutoField = getGroupPushAuto model.groups model.activeGroupPk
-                , peopleLoadingProgress = 50
+                , peopleLoadingProgress = 100
                 , firstPageLoad = False
                 , error = False
                 , fetchPeople = False

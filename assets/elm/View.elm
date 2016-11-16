@@ -20,23 +20,24 @@ view model =
             ]
     else
         div []
-            [ loadingIndicator model
+            [ loadingIndicator 2 "#03A9F4" model.groupsLoadingProgress
+            , loadingIndicator 0 "#8BC34A" model.peopleLoadingProgress
             , div [ class "container" ] [ mainView model ]
             ]
 
 
-loadingIndicator : Model -> Html Msg
-loadingIndicator model =
+loadingIndicator : Int -> String -> Int -> Html Msg
+loadingIndicator top colour progress =
     div
         [ style
-            [ ( "height", "3px" )
+            [ ( "height", "2px" )
             , ( "z-index", "100000" )
-            , ( "top", "0" )
+            , ( "top", (toString top) ++ "px" )
             , ( "position", "fixed" )
             , ( "opacity", "1" )
-            , ( "background", "#1af184" )
-            , ( "transition", "all .3s ease" )
-            , ( "width", toString (model.peopleLoadingProgress + model.groupsLoadingProgress) ++ "%" )
+            , ( "background", colour )
+            , ( "transition", "all .1s ease" )
+            , ( "width", (toString progress) ++ "%" )
             ]
         ]
         []

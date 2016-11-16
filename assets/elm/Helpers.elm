@@ -12,7 +12,10 @@ import Task
 
 percentDone : { bytes : Int, bytesExpected : Int } -> Int
 percentDone progress =
-    round ((toFloat progress.bytes) / (toFloat progress.bytesExpected) * 50)
+    100
+        * (toFloat progress.bytes)
+        / (toFloat progress.bytesExpected)
+        |> round
 
 
 filterRecord : Regex.Regex -> a -> Bool
