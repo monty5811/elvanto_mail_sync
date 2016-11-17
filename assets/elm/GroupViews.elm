@@ -5,7 +5,7 @@ import ElvantoModels exposing (..)
 import Helpers exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Messages exposing (..)
 import Models exposing (..)
 import Regex
@@ -126,13 +126,26 @@ formView model group =
 emailForm : Model -> ElvantoGroup -> Html Msg
 emailForm model group =
     div []
-        [ div [ class "form-group" ]
-            [ input [ class "form-control", id "id_google_email", attribute "maxlength" "254", name "google_email", placeholder "Google Email", type_ "email", onInput FormEmailChange, value model.emailField ]
-                []
+        [ Html.form
+            [ class "form-inline"
+            , onSubmit (FormSubmit model)
             ]
-        , div [ class "form-group" ]
-            [ button [ class "btn btn-default", onClick (FormSubmit model) ]
-                [ text "Update email" ]
+            [ div [ class "input-group" ]
+                [ input
+                    [ class "form-control"
+                    , placeholder "Google Email"
+                    , type_ "email"
+                    , onInput FormEmailChange
+                    , value model.emailField
+                    ]
+                    []
+                , div
+                    [ class "input-group-addon"
+                    , onClick (FormSubmit model)
+                    ]
+                    [ i [ class "fa fa-save" ] []
+                    ]
+                ]
             ]
         ]
 
