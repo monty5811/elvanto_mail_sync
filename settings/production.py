@@ -35,12 +35,6 @@ MIDDLEWARE = [
     'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
 ] + MIDDLEWARE
 
-OPBEAT = {
-    "ORGANIZATION_ID": os.environ.get('OPBEAT_ORG_ID', ''),
-    "APP_ID": os.environ.get('OPBEAT_APP_ID', ''),
-    "SECRET_TOKEN": os.environ.get('OPBEAT_SECRET_TOKEN', ''),
-}
-
 # Logging
 LOGGING = {
     'version': 1,
