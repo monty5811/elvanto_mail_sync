@@ -1,4 +1,4 @@
-var path = require("path");
+var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
 
   output: {
     path: path.resolve('../elvanto_sync/static/js/'),
-    filename: "[name].js",
+    filename: '[name].js',
   },
 
   resolve: {
@@ -20,7 +20,7 @@ module.exports = {
   plugins: [
     new webpack.LoaderOptionsPlugin({
       minimize: true,
-      debug: false
+      debug: false,
     }),
   ],
 
@@ -28,13 +28,13 @@ module.exports = {
     loaders: [
       {
         test: /\.elm$/,
-          exclude: [/elm-stuff/, /node_modules/],
-          loader: 'elm-webpack'
+        exclude: [/elm-stuff/, /node_modules/],
+        loader: 'elm-webpack-loader',
       },
     ],
   },
 
   watchOptions: {
-    poll: 500
-  }
-}
+    poll: 500,
+  },
+};
