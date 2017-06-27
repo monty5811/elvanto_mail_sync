@@ -10,11 +10,11 @@ Small webapp to sync Elvanto group members to mailing lists on a Google apps dom
 
  - Whitelist access to particular users
  - Prevent syncing of an email address (on a per group or a global level)
- - Enable automated syncing for individual groups
+ - Enable/disable automated syncing for individual groups
 
 ## Installation
 
-This app should run comfortably on Heroku's free tier providing you do not sync too frequently.
+This app should run comfortably on Heroku's free tier.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 

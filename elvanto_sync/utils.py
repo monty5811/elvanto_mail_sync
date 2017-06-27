@@ -14,7 +14,9 @@ def clean_emails(elvanto_emails=(), google_emails=()):
 
 
 def convert_aliases(emails):
-    aliases = [('googlemail', 'gmail'), ]
+    aliases = [
+        ('googlemail', 'gmail'),
+    ]
     for alias in aliases:
         emails = [email.replace(alias[0], alias[1]) for email in emails]
 

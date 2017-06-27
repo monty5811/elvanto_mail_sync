@@ -11,16 +11,23 @@ INSTALLED_APPS = [
     # built in
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     # elvanto sync
     'elvanto_sync',
     # 3rd party
-    'social.apps.django_app.default',
     'django_extensions',
     'rest_framework',
+    # allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -43,8 +50,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -55,8 +60,8 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'elvanto_sync.urls'
@@ -96,39 +101,30 @@ ELVANTO_KEY = os.environ.get('ELVANTO_KEY', '')
 EMAIL_OVERRIDE_FIELD_ID = os.environ.get('ELVANTO_OVERRIDE_FIELD_ID', '')
 ELVANTO_PEOPLE_PAGE_SIZE = 1000  # must be 10 or larger
 
-# social login settings
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
-SOCIAL_AUTH_LOGIN_REDIRECT_ULR = '/'
-SOCIAL_AUTH_MODEL = 'elvanto_sync'
-SOCIAL_AUTH_USER_MODEL = 'auth.User'
-SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
-
-LOGIN_URL = '/login/google-oauth2/'
+# login settings
+LOGIN_URL = '/auth/google/login/'
 LOGIN_ERROR_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
-# Google auth credentials
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get(
-    'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', ''
-)
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
-    'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', ''
-)
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = os.environ.get(
-    'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS', ''
-).replace('  ', '').split(',')
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS = os.environ.get(
-    'SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS', ''
-).replace(' ', '').split(',')
+# Google auth settings
+SOCIALACCOUNT_ADAPTER = 'elvanto_sync.adapters.LockedDownGoogleAdapter'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    'https://www.googleapis.com/auth/admin.directory.group.member',
-    'https://www.googleapis.com/auth/admin.directory.group',
-]
-SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
-    'access_type': 'offline',
-    'approval_prompt': 'auto',
-}
+GOOGLE_OAUTH2_WHITELISTED_DOMAINS = os.environ.get(
+    'GOOGLE_OAUTH2_WHITELISTED_DOMAINS', None)
+if GOOGLE_OAUTH2_WHITELISTED_DOMAINS is not None:
+    GOOGLE_OAUTH2_WHITELISTED_DOMAINS.replace('  ', '').split(',')
+else:
+    GOOGLE_OAUTH2_WHITELISTED_DOMAINS = []
+
+GOOGLE_OAUTH2_WHITELISTED_EMAILS = os.environ.get(
+    'GOOGLE_OAUTH2_WHITELISTED_EMAILS', None
+)
+if GOOGLE_OAUTH2_WHITELISTED_EMAILS is not None:
+    GOOGLE_OAUTH2_WHITELISTED_EMAILS.replace(' ', '').split(',')
+else:
+    GOOGLE_OAUTH2_WHITELISTED_EMAILS = []
 
 # Use a service key to access Google apis:
 # see http://gspread.readthedocs.io/en/latest/oauth2.html for help
@@ -148,3 +144,8 @@ GOOGLE_KEYFILE_DICT = {
 }
 
 G_DELEGATED_USER = os.environ.get('G_DELEGATED_USER')
+
+GOOGLE_AUTH_SCOPE = [
+    'https://www.googleapis.com/auth/admin.directory.group.member',
+    'https://www.googleapis.com/auth/admin.directory.group',
+]

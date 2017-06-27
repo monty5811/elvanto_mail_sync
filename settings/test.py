@@ -7,7 +7,7 @@ DATABASES = {
     }
 }
 
-CELERY_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = True
 BROKER_BACKEND = 'memory'
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 

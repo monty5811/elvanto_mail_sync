@@ -9,9 +9,11 @@ from elvanto_sync import utils
 def test_clean_emails(email_set1, email_set2):
     utils.clean_emails(elvanto_emails=email_set1, google_emails=email_set2)
 
+
 @given(lists(fake_factory('email')))
 def test_convert_aliases_any_email(emails):
     utils.convert_aliases(emails)
+
 
 def test_convert_aliases_removes_googlemail():
     emails = utils.convert_aliases([

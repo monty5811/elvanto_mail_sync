@@ -8,9 +8,7 @@ from rest_framework.views import APIView
 
 from elvanto_sync.mixins import LoginRequiredMixin
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson
-from elvanto_sync.tasks import (
-    bg_push_all_groups, bg_push_group, bg_refresh_elvanto_data
-)
+from elvanto_sync.tasks import (bg_push_all_groups, bg_push_group, bg_refresh_elvanto_data)
 from elvanto_sync.serializers import ElvantoGroupSerializer, ElvantoPersonSerializer
 
 

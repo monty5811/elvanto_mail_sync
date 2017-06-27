@@ -7,9 +7,7 @@ from django.test import Client
 
 @pytest.fixture()
 def users():
-    user = User.objects.create_user(
-        username='test', email='test@example.com', password='top_secret'
-    )
+    user = User.objects.create_user(username='test', email='test@example.com', password='top_secret')
     user.save()
     return {'user': user}
 

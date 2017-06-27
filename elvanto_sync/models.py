@@ -12,9 +12,7 @@ logger = logging.getLogger('elvanto_sync')
 class ElvantoGroup(models.Model):
     name = models.CharField("Group Name", max_length=250)
     e_id = models.CharField("Elvanto ID", max_length=36)
-    google_email = models.EmailField(
-        'Google Email', max_length=254, blank=True, null=True
-    )
+    google_email = models.EmailField('Google Email', max_length=254, blank=True, null=True)
     last_pulled = models.DateTimeField(blank=True, null=True)
     last_pushed = models.DateTimeField(blank=True, null=True)
     push_auto = models.BooleanField(
@@ -44,10 +42,7 @@ class ElvantoGroup(models.Model):
         if not api.check_group_exists():
             api.create_group()
 
-        emails = utils.clean_emails(
-            elvanto_emails=self.elvanto_emails(),
-            google_emails=api.fetch_members()
-        )
+        emails = utils.clean_emails(elvanto_emails=self.elvanto_emails(), google_emails=api.fetch_members())
         logger.debug('Emails here: [%s]', ','.join(emails.elvanto))
         logger.debug('Emails google: [%s]', ','.join(emails.google))
         here_not_on_google = set(emails.elvanto) - set(emails.google)
@@ -64,10 +59,7 @@ class ElvantoGroup(models.Model):
         self.save()
 
         # check emails match now:
-        new_emails = utils.clean_emails(
-            elvanto_emails=self.elvanto_emails(),
-            google_emails=api.fetch_members()
-        )
+        new_emails = utils.clean_emails(elvanto_emails=self.elvanto_emails(), google_emails=api.fetch_members())
         self._check_emails_match(new_emails)
 
     def _check_emails_match(self, emails):
@@ -89,9 +81,7 @@ class ElvantoGroup(models.Model):
     def elvanto_emails(self):
         return list(
             self.group_members.exclude(disabled_groups__in=[self])
-            .exclude(disabled_entirely=True).values_list(
-                'email', flat=True
-            )
+            .exclude(disabled_entirely=True).values_list('email', flat=True)
         )
 
     def group_member_pks(self):
@@ -108,16 +98,10 @@ class ElvantoPerson(models.Model):
     e_id = models.CharField("Elvanto ID", max_length=36)
     email = models.CharField("Email", max_length=250)
     first_name = models.CharField("First Name", max_length=250)
-    preferred_name = models.CharField(
-        "Preferred Name", max_length=250, blank=True
-    )
+    preferred_name = models.CharField("Preferred Name", max_length=250, blank=True)
     last_name = models.CharField("Last Name", max_length=250)
-    elvanto_groups = models.ManyToManyField(
-        ElvantoGroup, blank=True, related_name='group_members'
-    )
-    disabled_groups = models.ManyToManyField(
-        ElvantoGroup, blank=True, related_name='group_members_disabled'
-    )
+    elvanto_groups = models.ManyToManyField(ElvantoGroup, blank=True, related_name='group_members')
+    disabled_groups = models.ManyToManyField(ElvantoGroup, blank=True, related_name='group_members_disabled')
     disabled_entirely = models.BooleanField(default=False)
 
     def full_name(self):

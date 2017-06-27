@@ -13,24 +13,12 @@ class ElvantoPersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ElvantoPerson
-        fields = (
-            'fullName',
-            'email',
-            'pk',
-            'disabledEntirely',
-            'disabledGroups',
-        )
+        fields = ('fullName', 'email', 'pk', 'disabledEntirely', 'disabledGroups', )
 
 
 class ElvantoGroupSerializer(serializers.ModelSerializer):
-    lastPulled = serializers.DateTimeField(
-        source='last_pulled',
-        format='%d %b %H:%M', required=False
-    )
-    lastPushed = serializers.DateTimeField(
-        source='last_pushed',
-        format='%d %b %H:%M', required=False
-    )
+    lastPulled = serializers.DateTimeField(source='last_pulled', format='%d %b %H:%M', required=False)
+    lastPushed = serializers.DateTimeField(source='last_pushed', format='%d %b %H:%M', required=False)
     name = serializers.CharField(required=False)
     googleEmail = serializers.EmailField(source='google_email')
     peoplePks = serializers.ReadOnlyField(source='group_member_pks')
@@ -38,12 +26,4 @@ class ElvantoGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ElvantoGroup
-        fields = (
-            'name',
-            'googleEmail',
-            'pk',
-            'pushAuto',
-            "lastPushed",
-            "lastPulled",
-            'peoplePks',
-        )
+        fields = ('name', 'googleEmail', 'pk', 'pushAuto', "lastPushed", "lastPulled", 'peoplePks', )

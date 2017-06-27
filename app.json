@@ -29,22 +29,15 @@
       "value": "",
       "required": false
     },
-    "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": {
-      "description": "Google Client ID",
-      "value": ""
-    },
-    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": {
-      "description": "Google Client Secret",
-      "value": ""
-    },
-    "SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS": {
+    "GOOGLE_OAUTH2_WHITELISTED_DOMAINS": {
       "description": "It is strongly recommened you leave this blank. Comma separated list of domains from which anyone will be able to access the app.",
       "value": "",
       "required": false
     },
-    "SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS": {
-      "description": "Comma separated list of emails that can access the app",
-      "value": ""
+    "GOOGLE_OAUTH2_WHITELISTED_EMAILS": {
+      "description": "Comma separated list of emails that can access the app. This will be ignored if any domains are whitelisted.",
+      "value": "",
+      "required": false
     },
     "G_DELEGATED_USER": {
         "description": "We need to impersonate a user in the domain.",

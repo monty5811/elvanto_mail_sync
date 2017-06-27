@@ -44,7 +44,7 @@ class GoogleClient:
     def setup_creds(self):
         creds = ServiceAccountCredentials._from_parsed_json_keyfile(
             settings.GOOGLE_KEYFILE_DICT,
-            settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE,
+            settings.GOOGLE_AUTH_SCOPE,
         )
         creds = creds.create_delegated(settings.G_DELEGATED_USER)
         creds.get_access_token()
@@ -87,9 +87,7 @@ class GoogleClient:
 
     def create_group(self):
         logger.info('Creating mailing list: %s', self.group)
-        r = self.make_request(
-            'post', self.base_url, data={'email': self.group}
-        )
+        r = self.make_request('post', self.base_url, data={'email': self.group})
         if r.status_code == 201:
             logger.info('Created mailing list: %s', self.group)
 
@@ -115,9 +113,7 @@ class GoogleClient:
                 self.add_member(url, email, attempt=attempt + 1)
             else:
                 logger.error(
-                    'Could not add member',
-                    exc_info=True,
-                    extra={
+                    'Could not add member', exc_info=True, extra={
                         'group': self.group,
                         'member': email,
                     }
@@ -152,9 +148,7 @@ class GoogleClient:
                 )
             else:
                 logger.error(
-                    'Could not delete member',
-                    exc_info=True,
-                    extra={
+                    'Could not delete member', exc_info=True, extra={
                         'group': self.group,
                         'member': email,
                     }
