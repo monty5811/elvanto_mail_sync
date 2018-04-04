@@ -28,12 +28,17 @@ CELERY_BROKER_POOL_LIMIT = 1
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
-# OPBEAT
-INSTALLED_APPS += ['opbeat.contrib.django', ]
-
+# rollbar
 MIDDLEWARE = [
-    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ] + MIDDLEWARE
+
+ROLLBAR = {
+    'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN'),
+    'environment': 'development' if DEBUG else 'production',
+    'branch': 'master',
+    'root': BASE_DIR,
+}
 
 # Logging
 LOGGING = {
@@ -45,10 +50,17 @@ LOGGING = {
             '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        }
+    },
     'handlers': {
-        'opbeat': {
-            'level': 'WARNING',
-            'class': 'opbeat.contrib.django.handlers.OpbeatHandler',
+        'rollbar': {
+            'filters': ['require_debug_false'],
+            'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN'),
+            'environment': 'development' if DEBUG else 'production',
+            'class': 'rollbar.logger.RollbarHandler'
         },
         'console': {
             'level': 'DEBUG',
@@ -65,15 +77,9 @@ LOGGING = {
         'elvanto_sync': {
             'level': 'INFO',
             'handlers': [
-                'opbeat',
+                'rollbar',
                 'console',
             ],
-            'propagate': False,
-        },
-        # Log errors from the Opbeat module to the console (recommended)
-        'opbeat.errors': {
-            'level': 'ERROR',
-            'handlers': ['console'],
             'propagate': False,
         },
     },

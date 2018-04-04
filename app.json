@@ -88,7 +88,7 @@
     "heroku-postgresql:hobby-dev",
     "heroku-redis",
     "papertrail:choklad",
-    "opbeat:free",
+    "rollbar:free",
     "scheduler:standard"
   ],
   "buildpacks": [
