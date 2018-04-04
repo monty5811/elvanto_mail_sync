@@ -1,4 +1,5 @@
 .hypothesis/*
+.pytest_cache/
 *.pyc
 venv*/
 *.sqlite3

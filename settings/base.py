@@ -35,7 +35,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -115,16 +114,12 @@ GOOGLE_OAUTH2_WHITELISTED_DOMAINS = os.environ.get(
     'GOOGLE_OAUTH2_WHITELISTED_DOMAINS', None)
 if GOOGLE_OAUTH2_WHITELISTED_DOMAINS is not None:
     GOOGLE_OAUTH2_WHITELISTED_DOMAINS.replace('  ', '').split(',')
-else:
-    GOOGLE_OAUTH2_WHITELISTED_DOMAINS = []
 
 GOOGLE_OAUTH2_WHITELISTED_EMAILS = os.environ.get(
     'GOOGLE_OAUTH2_WHITELISTED_EMAILS', None
 )
 if GOOGLE_OAUTH2_WHITELISTED_EMAILS is not None:
     GOOGLE_OAUTH2_WHITELISTED_EMAILS.replace(' ', '').split(',')
-else:
-    GOOGLE_OAUTH2_WHITELISTED_EMAILS = []
 
 # Use a service key to access Google apis:
 # see http://gspread.readthedocs.io/en/latest/oauth2.html for help

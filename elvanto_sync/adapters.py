@@ -13,13 +13,16 @@ class LockedDownGoogleAdapter(DefaultSocialAccountAdapter):
         If there is a domain whitelist, the email whitelist is ignored.
         """
         user = sociallogin.user
-        if settings.GOOGLE_OAUTH2_WHITELISTED_DOMAINS:
+        if settings.GOOGLE_OAUTH2_WHITELISTED_DOMAINS is not None:
             # we whitelist anyone from the domain:
             if user.email.split('@')[1] not in settings.GOOGLE_OAUTH2_WHITELISTED_DOMAINS:
                 raise ImmediateHttpResponse(render_to_response('error.html'))
             return
 
-        if settings.GOOGLE_OAUTH2_WHITELISTED_EMAILS:
+        if settings.GOOGLE_OAUTH2_WHITELISTED_EMAILS is not None:
             # we whitelist only specified emails:
             if user.email not in settings.GOOGLE_OAUTH2_WHITELISTED_EMAILS:
                 raise ImmediateHttpResponse(render_to_response('error.html'))
+
+        # no whitelists found, do not permit any login
+        raise ImmediateHttpResponse(render_to_response('error.html'))

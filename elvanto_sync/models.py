@@ -1,6 +1,6 @@
 import logging
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 from elvanto_sync.google import GoogleClient
@@ -60,6 +60,8 @@ class ElvantoGroup(models.Model):
 
         # check emails match now:
         new_emails = utils.clean_emails(elvanto_emails=self.elvanto_emails(), google_emails=api.fetch_members())
+        new_emails.google = utils.convert_aliases(new_emails.google)  # process aliases
+        new_emails.elvanto = utils.convert_aliases(new_emails.elvanto)  # process aliases
         self._check_emails_match(new_emails)
 
     def _check_emails_match(self, emails):

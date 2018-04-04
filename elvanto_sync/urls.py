@@ -1,4 +1,5 @@
 from django.conf.urls import include, url
+from django.urls import path
 from django.contrib import admin
 from django.views.generic import TemplateView
 from rest_framework.permissions import IsAuthenticated
@@ -10,10 +11,6 @@ from elvanto_sync.models import ElvantoGroup, ElvantoPerson
 from elvanto_sync.serializers import (ElvantoGroupSerializer, ElvantoPersonSerializer)
 from django.conf.urls import include, url
 
-from allauth.account.views import confirm_email, login, logout
-import importlib
-from allauth.socialaccount import providers
-
 admin.autodiscover()
 
 
@@ -21,19 +18,13 @@ class RestrictedTemplateView(LoginRequiredMixin, TemplateView):
     pass
 
 
-providers_urlpatterns = []
-
-for provider in providers.registry.get_list():
-    prov_mod = importlib.import_module(provider.get_package() + '.urls')
-    providers_urlpatterns += getattr(prov_mod, 'urlpatterns', [])
-
 auth_patterns = [
-    url(r'^auth/', include(providers_urlpatterns)),
+    url(r'^auth/', include('allauth.urls')),
 ]
 
 
 urls_basic = [
-    url(r'^admin/', include(admin.site.urls)),
+    path(r'admin/', admin.site.urls),
     url(r'^$', RestrictedTemplateView.as_view(template_name='elvanto_sync/index.html'), name='index'),
     url(
         r'^group/(?P<pk>[0-9]+)$',

@@ -1,6 +1,6 @@
 import json
 import pytest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from elvanto_sync.elvanto import refresh_elvanto_data
 from elvanto_sync.models import ElvantoGroup, ElvantoPerson

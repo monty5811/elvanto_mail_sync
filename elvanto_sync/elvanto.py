@@ -129,7 +129,7 @@ def pull_groups(api=None):
     for e_grp in data['groups']['group']:
         # update/create group
         grp, created = ElvantoGroup.objects.get_or_create(e_id=e_grp['id'])
-        grp.name = e_grp['name'].encode('utf-8', 'replace').strip()
+        grp.name = e_grp['name'].encode('utf-8', 'replace').decode().strip()
         grp.last_pulled = timezone.now()
         # update membership
         grp.group_members.clear()
