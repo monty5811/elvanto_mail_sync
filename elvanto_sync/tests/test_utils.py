@@ -12,17 +12,19 @@ def test_clean_emails(email_set1, email_set2):
 
 @given(lists(fake_factory('email')))
 def test_convert_aliases_any_email(emails):
-    utils.convert_aliases(emails)
+    utils.generate_all_aliases(emails)
 
 
 def test_convert_aliases_removes_googlemail():
-    emails = utils.convert_aliases([
+    emails = utils.generate_all_aliases([
         'test@gmail.com',
         'test2@googlemail.com',
         'test3@hotmail.com',
     ])
-    assert emails == [
+    assert set(emails) == set([
         'test@gmail.com',
         'test2@gmail.com',
         'test3@hotmail.com',
-    ]
+        'test@googlemail.com',
+        'test2@googlemail.com',
+    ])

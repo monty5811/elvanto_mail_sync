@@ -45,9 +45,9 @@ class ElvantoGroup(models.Model):
         emails = utils.clean_emails(elvanto_emails=self.elvanto_emails(), google_emails=api.fetch_members())
         logger.debug(f'Emails here: [{",".join(emails.elvanto)}]')
         logger.debug(f'Emails google: [{",".join(emails.google)}]')
-        here_not_on_google = set(emails.elvanto) - set(emails.google)
+        here_not_on_google = utils.compare_emails(emails.elvanto, emails.google)
         logger.debug(f'Here, not on google: [{",".join(here_not_on_google)}]')
-        on_google_not_here = set(emails.google) - set(emails.elvanto)
+        on_google_not_here = utils.compare_emails(emails.google, emails.elvanto)
         logger.debug(f'On google, not here: [{",".join(on_google_not_here)}]')
 
         # update the group, we must call remove first, otherwise we may add
@@ -60,16 +60,11 @@ class ElvantoGroup(models.Model):
 
         # check emails match now:
         new_emails = utils.clean_emails(elvanto_emails=self.elvanto_emails(), google_emails=api.fetch_members())
-        new_emails.google = utils.convert_aliases(new_emails.google)  # process aliases
-        new_emails.elvanto = utils.convert_aliases(new_emails.elvanto)  # process aliases
         self._check_emails_match(new_emails)
 
     def _check_emails_match(self, emails):
-        emails.google = utils.convert_aliases(emails.google)
-        emails.elvanto = utils.convert_aliases(emails.elvanto)
-
-        here_not_on_google = set(emails.elvanto) - set(emails.google)
-        on_google_not_here = set(emails.google) - set(emails.elvanto)
+        here_not_on_google = utils.compare_emails(emails.elvanto, emails.google)
+        on_google_not_here = utils.compare_emails(emails.google, emails.elvanto)
         if (len(here_not_on_google) + len(on_google_not_here)) > 0:
             logger.warning(
                 'Updated list of emails does not result in a match for {}. Here, not on google: {} On google, not here: {}'.format(

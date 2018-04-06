@@ -4,6 +4,7 @@ from time import sleep
 from django.conf import settings
 import requests
 from oauth2client.service_account import ServiceAccountCredentials
+from elvanto_sync import utils
 
 logger = logging.getLogger('elvanto_sync')
 
@@ -125,7 +126,7 @@ class GoogleClient:
             self.add_member(url, email)
 
     def remove_members(self, emails):
-        for email in emails:
+        for email in utils.generate_all_aliases(emails):
             self.remove_member(email)
 
     def remove_member(self, email):

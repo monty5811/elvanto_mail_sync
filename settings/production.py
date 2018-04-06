@@ -40,6 +40,8 @@ ROLLBAR = {
     'root': BASE_DIR,
 }
 
+ROLLBAR['patch_debugview'] = False
+
 # Logging
 LOGGING = {
     'version': 1,

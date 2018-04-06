@@ -13,11 +13,34 @@ def clean_emails(elvanto_emails=(), google_emails=()):
     return emails
 
 
-def convert_aliases(emails):
-    aliases = [
-        ('googlemail.com', 'gmail.com'),
+aliases = [
+    ('googlemail.com', 'gmail.com'),
     ]
-    for alias in aliases:
-        emails = [email.replace(alias[0], alias[1]) for email in emails]
 
-    return emails
+
+def generate_all_aliases(emails):
+    for alias in aliases:
+        tmp_emails_1 = [email.replace(alias[0], alias[1]) for email in emails]
+        tmp_emails_2 = [email.replace(alias[1], alias[0]) for email in emails]
+
+    return list(set(emails) | set(tmp_emails_1) | set(tmp_emails_2))
+
+
+def compare_emails(a, b):
+    # naive that doesn't handle aliases:
+    # return set(a) - set(b)
+    output = set()
+    for email in a:
+        if a in b:
+            # if the email is in b, we can go to next
+            continue
+        # get all the aliases
+        aliased_tmp = generate_all_aliases([email])
+        # check if any aliases are in b:
+        if any(x in b for x in aliased_tmp):
+            continue
+
+        # neither email or any aliases are in b, keep it
+        output.add(email)
+
+    return output
