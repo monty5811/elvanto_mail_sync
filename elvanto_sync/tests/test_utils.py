@@ -1,18 +1,20 @@
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.extra.fakefactory import fake_factory
 from hypothesis.strategies import lists, sets
 
 from elvanto_sync import utils
 
 
-@given(sets(fake_factory('email')), sets(fake_factory('email')))
-def test_clean_emails(email_set1, email_set2):
-    utils.clean_emails(elvanto_emails=email_set1, google_emails=email_set2)
+with settings(suppress_health_check=[3]):
+    @given(sets(fake_factory('email')), sets(fake_factory('email')))
+    def test_clean_emails(email_set1, email_set2):
+        utils.clean_emails(elvanto_emails=email_set1, google_emails=email_set2)
 
 
-@given(lists(fake_factory('email')))
-def test_convert_aliases_any_email(emails):
-    utils.generate_all_aliases(emails)
+with settings(suppress_health_check=[3]):
+    @given(lists(fake_factory('email')))
+    def test_convert_aliases_any_email(emails):
+        utils.generate_all_aliases(emails)
 
 
 def test_convert_aliases_removes_googlemail():
