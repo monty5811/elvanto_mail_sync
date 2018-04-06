@@ -57,6 +57,7 @@ LOGGING = {
     },
     'handlers': {
         'rollbar': {
+            'level': 'WARNING',
             'filters': ['require_debug_false'],
             'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN'),
             'environment': 'development' if DEBUG else 'production',

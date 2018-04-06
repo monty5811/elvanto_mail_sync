@@ -109,7 +109,7 @@ def delete_missing_groups(data):
     group_ids = [group['id'] for group in data['groups']['group']]
     missing_groups = ElvantoGroup.objects.exclude(e_id__in=group_ids)
     for grp in missing_groups:
-        logger.info('Deleting %s (%s)', grp.name, grp.e_id)
+        logger.info(f'Deleting {grp.name} ({grp.e_id})')
         grp.group_members.clear()
         grp.delete()
 

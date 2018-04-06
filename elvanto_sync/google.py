@@ -86,10 +86,10 @@ class GoogleClient:
             return False
 
     def create_group(self):
-        logger.info('Creating mailing list: %s', self.group)
+        logger.info(f'Creating mailing list: {self.group}')
         r = self.make_request('post', self.base_url, data={'email': self.group})
         if r.status_code == 201:
-            logger.info('Created mailing list: %s', self.group)
+            logger.info(f'Created mailing list: {self.group}')
 
     def fetch_members(self):
         r = self.make_request('get', self._members_url())
@@ -113,7 +113,7 @@ class GoogleClient:
                 self.add_member(url, email, attempt=attempt + 1)
             else:
                 logger.error(
-                    'Could not add member', exc_info=True, extra={
+                    f'Could not add {email} to {self.group}', exc_info=True, extra={
                         'group': self.group,
                         'member': email,
                     }
@@ -139,7 +139,7 @@ class GoogleClient:
         except Exception:
             if resp.status_code == 404:
                 logger.debug(
-                    'Tried to delete member that does not exist',
+                    f'Tried to delete member ({email}) that does not exist (from {self.group})',
                     exc_info=True,
                     extra={
                         'group': self.group,
@@ -147,8 +147,10 @@ class GoogleClient:
                     }
                 )
             else:
-                logger.error(
-                    'Could not delete member', exc_info=True, extra={
+                logger.debug(
+                    f'Tried to delete member ({email}) that does not exist (from {self.group})',
+                    exc_info=True,
+                    extra={
                         'group': self.group,
                         'member': email,
                     }
@@ -170,5 +172,5 @@ def update_mailing_lists(only_auto=True):
         except Exception as e:
             print('[Failed] Issue with Group: {name}'.format(name=grp.name))
             print(e)
-            logger.error('Issue with group: %s', grp.name, exc_info=True)
+            logger.error(f'Issue with group:{grp.name}', exc_info=True)
             continue

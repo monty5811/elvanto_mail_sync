@@ -28,9 +28,9 @@ class ElvantoGroup(models.Model):
         """
         # Check if we have an email to sync to:
         if self.google_email is None or not self.google_email:
-            logger.info('No email address for %s', str(self))
+            logger.info(f'No email address for {str(self)}')
             return
-        logger.info('Pushing to %s', self.google_email)
+        logger.info(f'Pushing to {self.google_email}')
 
         # Reuse api session, and update obj with email address:
         if api is None:
@@ -43,12 +43,12 @@ class ElvantoGroup(models.Model):
             api.create_group()
 
         emails = utils.clean_emails(elvanto_emails=self.elvanto_emails(), google_emails=api.fetch_members())
-        logger.debug('Emails here: [%s]', ','.join(emails.elvanto))
-        logger.debug('Emails google: [%s]', ','.join(emails.google))
+        logger.debug(f'Emails here: [{",".join(emails.elvanto)}]')
+        logger.debug(f'Emails google: [{",".join(emails.google)}]')
         here_not_on_google = set(emails.elvanto) - set(emails.google)
-        logger.debug('Here, not on google: [%s]', ','.join(here_not_on_google))
+        logger.debug(f'Here, not on google: [{",".join(here_not_on_google)}]')
         on_google_not_here = set(emails.google) - set(emails.elvanto)
-        logger.debug('On google, not here: [%s]', ','.join(on_google_not_here))
+        logger.debug(f'On google, not here: [{",".join(on_google_not_here)}]')
 
         # update the group, we must call remove first, otherwise we may add
         # a member and then remove them due to domain aliases
@@ -72,12 +72,11 @@ class ElvantoGroup(models.Model):
         on_google_not_here = set(emails.google) - set(emails.elvanto)
         if (len(here_not_on_google) + len(on_google_not_here)) > 0:
             logger.warning(
-                'Updated list of emails does not result in a match for %s.'
-                ' Here, not on google: %s'
-                ' On google, not here: %s',
-                self.google_email,
-                ','.join(sorted(here_not_on_google)),
-                ','.join(sorted(on_google_not_here)),
+                'Updated list of emails does not result in a match for {}. Here, not on google: {} On google, not here: {}'.format(
+                    self.google_email,
+                    ','.join(sorted(here_not_on_google)),
+                    ','.join(sorted(on_google_not_here)),
+                )
             )
 
     def elvanto_emails(self):
