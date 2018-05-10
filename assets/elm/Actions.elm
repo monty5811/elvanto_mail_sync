@@ -2,7 +2,7 @@ module Actions exposing (..)
 
 import Cache exposing (saveGroups)
 import Decoders exposing (..)
-import DjangoSend exposing (post, get, CSRFToken)
+import DjangoSend exposing (CSRFToken, get, post)
 import ElvantoModels exposing (..)
 import Encoders exposing (..)
 import Helpers exposing (..)
@@ -11,6 +11,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Messages exposing (..)
 import Models exposing (..)
+
 
 
 -- All group actions
@@ -42,16 +43,16 @@ submitForm : Model -> Cmd Msg
 submitForm model =
     let
         url =
-            groupsUrl ++ (toString model.activeGroupPk)
+            groupsUrl ++ String.fromInt model.activeGroupPk
 
         body =
             submitFormBody model.emailField model.pushAutoField
     in
-        post url
-            body
-            model.csrftoken
-            groupDecoder
-            |> Http.send FormSubmitResp
+    post url
+        body
+        model.csrftoken
+        groupDecoder
+        |> Http.send FormSubmitResp
 
 
 submitPushRequest : Model -> Cmd Msg
@@ -60,8 +61,8 @@ submitPushRequest model =
         body =
             pushRequestBody model.activeGroupPk
     in
-        post "/buttons/push_group/" body model.csrftoken decodeAlwaysTrue
-            |> Http.send (always LoadData)
+    post "/buttons/push_group/" body model.csrftoken decodeAlwaysTrue
+        |> Http.send (always LoadData)
 
 
 
@@ -83,7 +84,8 @@ optUpdateGlobal people pk state =
 updateGlobal : PersonPk -> Bool -> ElvantoPerson -> ElvantoPerson
 updateGlobal pk state person =
     if person.pk == pk then
-        { person | disabledEntirely = (not state) }
+        { person | disabledEntirely = not state }
+
     else
         person
 
@@ -104,8 +106,9 @@ updateLocal : GroupPk -> PersonPk -> Bool -> ElvantoPerson -> ElvantoPerson
 updateLocal groupPk personPk state person =
     if person.pk == personPk then
         { person
-            | disabledGroups = (updateDisabledGroupsList groupPk state person.disabledGroups)
+            | disabledGroups = updateDisabledGroupsList groupPk state person.disabledGroups
         }
+
     else
         person
 
@@ -118,7 +121,8 @@ updateDisabledGroupsList groupPk state groups =
                 groups
                     |> List.partition (\pk -> pk == groupPk)
         in
-            newGroups
+        newGroups
+
     else
         groupPk :: groups
 
@@ -133,5 +137,6 @@ updateObj : { a | pk : Int } -> { a | pk : Int } -> { a | pk : Int }
 updateObj newObj oldObj =
     if newObj.pk == oldObj.pk then
         newObj
+
     else
         oldObj

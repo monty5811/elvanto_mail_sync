@@ -1,44 +1,64 @@
 module View exposing (view)
 
 import Actions exposing (..)
+import Browser
 import ElvantoModels exposing (..)
 import GroupViews exposing (groupView)
 import Helpers exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onWithOptions)
+import Html.Attributes as A exposing (..)
+import Html.Events exposing (custom, onInput)
 import Json.Decode as Json
 import Messages exposing (..)
 import Models exposing (..)
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Page Msg
 view model =
     if model.error then
-        div [ class "container" ]
-            [ errorView
+        { title = "E -> G: Error!"
+        , body =
+            [ div [ class "container" ]
+                [ errorView
+                ]
             ]
+        }
+
     else
-        div []
+        { title = routeTitle model
+        , body =
             [ loadingIndicator 2 "#03A9F4" model.groupsLoadingProgress
             , loadingIndicator 0 "#8BC34A" model.peopleLoadingProgress
             , div [ class "container" ] [ mainView model ]
             ]
+        }
+
+
+routeTitle : Model -> String
+routeTitle model =
+    case model.currentRoute of
+        Home ->
+            "E -> G"
+
+        Group pk ->
+            let
+                group =
+                    getCurrentGroup model.groups model.activeGroupPk
+            in
+            "E -> G: " ++ group.name
 
 
 loadingIndicator : Int -> String -> Int -> Html Msg
 loadingIndicator top colour progress =
     div
-        [ style
-            [ ( "height", "2px" )
-            , ( "z-index", "100000" )
-            , ( "top", (toString top) ++ "px" )
-            , ( "position", "fixed" )
-            , ( "opacity", "1" )
-            , ( "background", colour )
-            , ( "transition", "all .1s ease" )
-            , ( "width", (toString progress) ++ "%" )
-            ]
+        [ A.style "height" "2px"
+        , A.style "z-index" "100000"
+        , A.style "top" (String.fromInt top ++ "px")
+        , A.style "position" "fixed"
+        , A.style "opacity" "1"
+        , A.style "background" colour
+        , A.style "transition" "all .1s ease"
+        , A.style "width" (String.fromInt progress ++ "%")
         ]
         []
 
@@ -54,7 +74,7 @@ errorView =
 
 mainView : Model -> Html Msg
 mainView model =
-    case model.currentPage of
+    case model.currentRoute of
         Home ->
             mainTable model
 
@@ -105,7 +125,7 @@ mainTable model =
 groupRows : Model -> List (Html Msg)
 groupRows model =
     model.groups
-        |> List.filter (filterRecord model.groupFilter)
+        |> List.filter (filterRecord model.groupFilter groupToString)
         |> List.map (groupRow model.people)
 
 
@@ -116,8 +136,8 @@ groupRow people group =
         , td [] [ text (Maybe.withDefault "" group.googleEmail) ]
         , td [] [ dateCell group.lastPulled ]
         , td [] [ dateCell group.lastPushed ]
-        , td [] [ text (toString (List.length group.people)) ]
-        , td [] [ text (toString (numDisabledPeople group people)) ]
+        , td [] [ text (String.fromInt (List.length group.people)) ]
+        , td [] [ text (String.fromInt (numDisabledPeople group people)) ]
         , td [] [ syncIndicator group.pushAuto ]
         ]
 
@@ -131,6 +151,7 @@ syncIndicator : Bool -> Html Msg
 syncIndicator bool =
     if bool then
         span [ class "tag tag-primary" ] [ text "Syncing" ]
+
     else
         div [] []
 
@@ -166,6 +187,7 @@ onClick message =
         options =
             { stopPropagation = True
             , preventDefault = True
+            , message = message
             }
     in
-        onWithOptions "click" options (Json.succeed message)
+    custom "click" (Json.succeed options)

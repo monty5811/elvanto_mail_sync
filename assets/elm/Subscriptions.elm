@@ -8,14 +8,13 @@ import Http.Progress as Progress exposing (Progress(..))
 import Json.Decode as Decode
 import Messages exposing (..)
 import Models exposing (..)
-import Time exposing (Time, minute)
+import Time exposing (Posix)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Time.every minute
-            (\t -> LoadData)
+        [ Time.every (1000 * 60) (\t -> LoadData)
         , groupsSub model
         , peopleSub model
         ]

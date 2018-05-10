@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-const Elm = require('./Main.elm');
+//const Elm = require('./Main.elm');
 const version = 'v1'; // change this if our model changes!
 
 function loadFromStorage(key) {

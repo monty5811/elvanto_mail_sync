@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import Actions exposing (..)
+import Browser.Navigation
 import Cache exposing (..)
 import DjangoSend exposing (CSRFToken)
 import ElvantoModels exposing (..)
@@ -8,8 +9,7 @@ import Helpers exposing (..)
 import Http.Progress as Progress exposing (Progress(..))
 import Messages exposing (..)
 import Models exposing (..)
-import Nav exposing (toPath, urlUpdate)
-import Navigation
+import Nav
 import Regex
 
 
@@ -19,8 +19,28 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        UrlChange location ->
-            urlUpdate location model
+        UrlChange maybeRoute ->
+            case maybeRoute of
+                Just (Group pk) ->
+                    ( { model
+                        | currentRoute = Group pk
+                        , activeGroupPk = pk
+                        , emailField = getGroupEmail model.groups pk
+                        , pushAutoField = getGroupPushAuto model.groups pk
+                      }
+                    , focus "personfilter"
+                    )
+
+                _ ->
+                    ( { model
+                        | currentRoute = Home
+                        , activeGroupPk = 0
+                        , formStatus = NoRequest
+                        , pushGroupStatus = NotClicked
+                        , groupFilter = nullRegex
+                      }
+                    , focus "groupfilter"
+                    )
 
         -- Load data
         LoadData ->
@@ -76,38 +96,38 @@ update msg model =
 
         -- Main page updates
         PullAllNow ->
-            ( { model | pullAllStatus = Clicked }, (submitPullAllRequest model) )
+            ( { model | pullAllStatus = Clicked }, submitPullAllRequest model )
 
         PushAllNow ->
-            ( { model | pushAllStatus = Clicked }, (submitPushAllRequest model) )
+            ( { model | pushAllStatus = Clicked }, submitPushAllRequest model )
 
         ShowGroup group ->
-            ( model, Navigation.newUrl (toPath (Group group.pk)) )
+            ( model, Browser.Navigation.pushUrl (Nav.toPath (Group group.pk)) )
 
         UpdateGroupFilter filterText ->
-            ( { model | groupFilter = (textToRegex filterText) }, Cmd.none )
+            ( { model | groupFilter = textToRegex filterText }, Cmd.none )
 
         -- Group page updates
         HideGroup ->
-            ( model, Navigation.newUrl (toPath Home) )
+            ( model, Browser.Navigation.pushUrl (Nav.toPath Home) )
 
         PushNow ->
-            ( { model | pushGroupStatus = Clicked }, (submitPushRequest model) )
+            ( { model | pushGroupStatus = Clicked }, submitPushRequest model )
 
         ToggleAuto groupPk state ->
-            ( { model | pushAutoField = (not state) }, (toggleAutoSync groupPk state model.csrftoken) )
+            ( { model | pushAutoField = not state }, toggleAutoSync groupPk state model.csrftoken )
 
         ToggleAutoResp (Ok group) ->
             ( { model | groups = replaceRecordByPk model.groups group }, Cmd.none )
 
         ToggleAutoResp (Err _) ->
-            ( (failedRequest model), Cmd.none )
+            ( failedRequest model, Cmd.none )
 
         FormEmailChange email ->
             ( { model | emailField = email }, Cmd.none )
 
-        FormSubmit model ->
-            ( { model | formStatus = RequestSent }, (submitForm model) )
+        FormSubmit model_ ->
+            ( { model | formStatus = RequestSent }, submitForm model_ )
 
         FormSubmitResp (Ok arg) ->
             ( { model | formStatus = RequestSuccess, fetchPeople = True, fetchGroups = True }, Cmd.none )
@@ -116,23 +136,23 @@ update msg model =
             ( { model | formStatus = RequestFail }, Cmd.none )
 
         UpdatePersonFilter filterText ->
-            ( { model | personFilter = (textToRegex filterText) }, Cmd.none )
+            ( { model | personFilter = textToRegex filterText }, Cmd.none )
 
         -- Group table updates
         ToggleGlobal pk state ->
             ( { model | people = optUpdateGlobal model.people pk state }
-            , (toggleGlobal pk state model.csrftoken)
+            , toggleGlobal pk state model.csrftoken
             )
 
         ToggleLocal gPk pPk state ->
             ( { model
                 | people = optUpdateLocal model.people gPk pPk state
               }
-            , (toggleLocal gPk pPk state model.csrftoken)
+            , toggleLocal gPk pPk state model.csrftoken
             )
 
         ToggleResp (Ok person) ->
-            ( { model | people = (replaceRecordByPk model.people person) }, Cmd.none )
+            ( { model | people = replaceRecordByPk model.people person }, Cmd.none )
 
         ToggleResp (Err _) ->
-            ( (failedRequest model), Cmd.none )
+            ( failedRequest model, Cmd.none )

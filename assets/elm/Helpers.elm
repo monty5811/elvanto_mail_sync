@@ -1,6 +1,6 @@
 module Helpers exposing (..)
 
-import Dom
+import Browser
 import ElvantoModels exposing (..)
 import Http.Progress as Progress exposing (Progress(..))
 import Messages exposing (..)
@@ -13,13 +13,13 @@ import Task
 percentDone : { bytes : Int, bytesExpected : Int } -> Int
 percentDone progress =
     100
-        * (toFloat progress.bytes)
-        / (toFloat progress.bytesExpected)
+        * toFloat progress.bytes
+        / toFloat progress.bytesExpected
         |> round
 
 
-filterRecord : Regex.Regex -> a -> Bool
-filterRecord regex record =
+filterRecord : Regex.Regex -> (a -> String) -> a -> Bool
+filterRecord regex toString record =
     Regex.contains regex (toString record)
 
 
@@ -43,9 +43,8 @@ inGroup group person =
 textToRegex : String -> Regex.Regex
 textToRegex text =
     text
-        |> Regex.escape
-        |> Regex.regex
-        |> Regex.caseInsensitive
+        |> Regex.fromStringWith { caseInsensitive = True, multiline = False }
+        |> Maybe.withDefault Regex.never
 
 
 getGroupEmail : Groups -> Int -> String
@@ -77,8 +76,8 @@ numDisabledPeople group people =
                 |> List.filter (\person -> List.member group.pk person.disabledGroups)
                 |> List.map (\x -> x.pk)
     in
-        Set.fromList (List.concat [ globallyDisabled, locallyDisabled ])
-            |> Set.size
+    Set.fromList (List.concat [ globallyDisabled, locallyDisabled ])
+        |> Set.size
 
 
 failedRequest : Model -> Model
@@ -93,4 +92,4 @@ failedRequest model =
 
 focus : String -> Cmd Msg
 focus id =
-    Task.attempt (\_ -> NoOp) (Dom.focus id)
+    Task.attempt (\_ -> NoOp) (Browser.focus id)

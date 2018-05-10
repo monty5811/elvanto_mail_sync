@@ -2,30 +2,29 @@ module Decoders exposing (..)
 
 import ElvantoModels exposing (..)
 import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (optional, required, decode)
 import Json.Encode as Encode
 
 
 groupDecoder : Decode.Decoder ElvantoGroup
 groupDecoder =
-    decode ElvantoGroup
-        |> required "pk" Decode.int
-        |> required "name" Decode.string
-        |> required "googleEmail" (Decode.maybe Decode.string)
-        |> required "pushAuto" Decode.bool
-        |> required "lastPushed" (Decode.maybe Decode.string)
-        |> required "lastPulled" (Decode.maybe Decode.string)
-        |> required "peoplePks" (Decode.list Decode.int)
+    Decode.map7 ElvantoGroup
+        (Decode.field "pk" Decode.int)
+        (Decode.field "name" Decode.string)
+        (Decode.field "googleEmail" (Decode.maybe Decode.string))
+        (Decode.field "pushAuto" Decode.bool)
+        (Decode.field "lastPushed" (Decode.maybe Decode.string))
+        (Decode.field "lastPulled" (Decode.maybe Decode.string))
+        (Decode.field "peoplePks" (Decode.list Decode.int))
 
 
 personDecoder : Decode.Decoder ElvantoPerson
 personDecoder =
-    decode ElvantoPerson
-        |> required "email" Decode.string
-        |> required "fullName" Decode.string
-        |> required "pk" Decode.int
-        |> required "disabledEntirely" Decode.bool
-        |> required "disabledGroups" (Decode.list Decode.int)
+    Decode.map5 ElvantoPerson
+        (Decode.field "email" Decode.string)
+        (Decode.field "fullName" Decode.string)
+        (Decode.field "pk" Decode.int)
+        (Decode.field "disabledEntirely" Decode.bool)
+        (Decode.field "disabledGroups" (Decode.list Decode.int))
 
 
 decodeAlwaysTrue : Decode.Decoder Bool

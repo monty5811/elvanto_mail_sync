@@ -30,15 +30,15 @@ type alias Model =
     , pushGroupStatus : ButtonStatus
     , pushAllStatus : ButtonStatus
     , pullAllStatus : ButtonStatus
-    , currentPage : Page
+    , currentRoute : Route
     , groupsLoadingProgress : Int
     , peopleLoadingProgress : Int
     , firstPageLoad : Bool
     }
 
 
-initialModel : Flags -> Model
-initialModel flags =
+initialModel : Flags -> Maybe Route -> Model
+initialModel flags maybeRoute =
     { groups = flags.groupsCache
     , people = flags.peopleCache
     , fetchGroups = True
@@ -54,7 +54,7 @@ initialModel flags =
     , pushGroupStatus = NotClicked
     , pushAllStatus = NotClicked
     , pullAllStatus = NotClicked
-    , currentPage = Home
+    , currentRoute = Maybe.withDefault Home maybeRoute
     , groupsLoadingProgress = 0
     , peopleLoadingProgress = 0
     , firstPageLoad = True
@@ -73,6 +73,6 @@ type ButtonStatus
     | Clicked
 
 
-type Page
+type Route
     = Home
     | Group GroupPk

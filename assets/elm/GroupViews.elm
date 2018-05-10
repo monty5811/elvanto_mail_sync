@@ -4,7 +4,7 @@ import Actions exposing (..)
 import ElvantoModels exposing (..)
 import Helpers exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes as A
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Messages exposing (..)
 import Models exposing (..)
@@ -20,31 +20,31 @@ groupView model =
         people =
             getCurrentPeople model.people group
     in
-        div [ class "six column" ]
-            [ div
-                [ class "d-block w-100" ]
-                [ button [ class "btn btn-danger", style [ ( "width", "33%" ) ], onClick HideGroup ] [ text "Close" ]
-                , pushGroupButton model.pushGroupStatus
-                , syncButton group model.pushAutoField
-                ]
-            , br [] []
-            , headerView group
-            , currentEmailView group
-            , br [] []
-            , formView model group
-            , br [] []
-            , groupTableView group people model.personFilter
+    div [ A.class "six column" ]
+        [ div
+            [ A.class "d-block w-100" ]
+            [ button [ A.class "btn btn-danger", A.style "width" "33%", onClick HideGroup ] [ text "Close" ]
+            , pushGroupButton model.pushGroupStatus
+            , syncButton group model.pushAutoField
             ]
+        , br [] []
+        , headerView group
+        , currentEmailView group
+        , br [] []
+        , formView model group
+        , br [] []
+        , groupTableView group people model.personFilter
+        ]
 
 
 pushGroupButton : ButtonStatus -> Html Msg
 pushGroupButton status =
     case status of
         NotClicked ->
-            button [ class "btn btn-success", style [ ( "width", "33%" ) ], onClick PushNow ] [ text "Push to Google" ]
+            button [ A.class "btn btn-success", A.style "width" "33%", onClick PushNow ] [ text "Push to Google" ]
 
         Clicked ->
-            button [ class "btn btn-disabled", style [ ( "width", "33%" ) ] ] [ text "Pushing ..." ]
+            button [ A.class "btn btn-disabled", A.style "width" "33%" ] [ text "Pushing ..." ]
 
 
 headerView : ElvantoGroup -> Html Msg
@@ -60,27 +60,28 @@ currentEmailView group =
 syncButton : ElvantoGroup -> Bool -> Html Msg
 syncButton group pushAutoField =
     if pushAutoField then
-        button [ class "btn btn-success", style [ ( "width", "33%" ) ], onClick (ToggleAuto group.pk pushAutoField) ] [ text "Syncing" ]
+        button [ A.class "btn btn-success", A.style "width" "33%", onClick (ToggleAuto group.pk pushAutoField) ] [ text "Syncing" ]
+
     else
-        button [ class "btn btn-warning", style [ ( "width", "33%" ) ], onClick (ToggleAuto group.pk pushAutoField) ] [ text "Not Syncing" ]
+        button [ A.class "btn btn-warning", A.style "width" "33%", onClick (ToggleAuto group.pk pushAutoField) ] [ text "Not Syncing" ]
 
 
 groupTableView : ElvantoGroup -> People -> Regex.Regex -> Html Msg
 groupTableView group people personFilter =
-    div [ class "row" ]
-        [ div [ class "input-group" ]
-            [ span [ class "input-group-addon" ] [ text "Filter" ]
+    div [ A.class "row" ]
+        [ div [ A.class "input-group" ]
+            [ span [ A.class "input-group-addon" ] [ text "Filter" ]
             , input
-                [ class "form-control"
-                , type_ "text"
-                , placeholder "Filter..."
+                [ A.class "form-control"
+                , A.type_ "text"
+                , A.placeholder "Filter..."
                 , onInput UpdatePersonFilter
-                , id "personfilter"
+                , A.id "personfilter"
                 ]
                 []
             ]
-        , div [ class "table-responsive" ]
-            [ table [ class "table table-bordered table-sm" ]
+        , div [ A.class "table-responsive" ]
+            [ table [ A.class "table table-bordered table-sm" ]
                 [ thead []
                     [ tr []
                         [ th [] [ text "Name" ]
@@ -91,7 +92,7 @@ groupTableView group people personFilter =
                     ]
                 , tbody []
                     (people
-                        |> List.filter (filterRecord personFilter)
+                        |> List.filter (filterRecord personFilter personToString)
                         |> List.map (personRow group)
                     )
                 ]
@@ -106,44 +107,44 @@ formView model group =
             emailForm model group
 
         RequestSent ->
-            div [ class "alert alert-info" ]
-                [ i [ class "fa fa-spinner" ] []
+            div [ A.class "alert alert-info" ]
+                [ i [ A.class "fa fa-spinner" ] []
                 , text " saving"
                 ]
 
         RequestSuccess ->
             div []
-                [ div [ class "alert alert-success" ]
+                [ div [ A.class "alert alert-success" ]
                     [ text "Update saved"
                     ]
                 , emailForm model group
                 ]
 
         RequestFail ->
-            div [ class "alert alert-danger" ] [ text "Update not saved! Something went wrong :(" ]
+            div [ A.class "alert alert-danger" ] [ text "Update not saved! Something went wrong :(" ]
 
 
 emailForm : Model -> ElvantoGroup -> Html Msg
 emailForm model group =
     div []
         [ Html.form
-            [ class "form-inline"
+            [ A.class "form-inline"
             , onSubmit (FormSubmit model)
             ]
-            [ div [ class "input-group" ]
+            [ div [ A.class "input-group" ]
                 [ input
-                    [ class "form-control"
-                    , placeholder "Google Email"
-                    , type_ "email"
+                    [ A.class "form-control"
+                    , A.placeholder "Google Email"
+                    , A.type_ "email"
                     , onInput FormEmailChange
-                    , value model.emailField
+                    , A.value model.emailField
                     ]
                     []
                 , div
-                    [ class "input-group-addon"
+                    [ A.class "input-group-addon"
                     , onClick (FormSubmit model)
                     ]
-                    [ i [ class "fa fa-save" ] []
+                    [ i [ A.class "fa fa-save" ] []
                     ]
                 ]
             ]
@@ -166,15 +167,17 @@ disableGroupButton group person =
         disabled =
             List.member group.pk person.disabledGroups
     in
-        if disabled then
-            button [ class "btn btn-danger btn-sm", onClick (ToggleLocal group.pk person.pk disabled) ] [ text "Disabled" ]
-        else
-            button [ class "btn btn-success btn-sm", onClick (ToggleLocal group.pk person.pk disabled) ] [ text "Enabled" ]
+    if disabled then
+        button [ A.class "btn btn-danger btn-sm", onClick (ToggleLocal group.pk person.pk disabled) ] [ text "Disabled" ]
+
+    else
+        button [ A.class "btn btn-success btn-sm", onClick (ToggleLocal group.pk person.pk disabled) ] [ text "Enabled" ]
 
 
 disableEntirelyButton : ElvantoPerson -> Html Msg
 disableEntirelyButton person =
     if person.disabledEntirely then
-        button [ class "btn btn-danger btn-sm", onClick (ToggleGlobal person.pk person.disabledEntirely) ] [ text "Disabled" ]
+        button [ A.class "btn btn-danger btn-sm", onClick (ToggleGlobal person.pk person.disabledEntirely) ] [ text "Disabled" ]
+
     else
-        button [ class "btn btn-success btn-sm", onClick (ToggleGlobal person.pk person.disabledEntirely) ] [ text "Enabled" ]
+        button [ A.class "btn btn-success btn-sm", onClick (ToggleGlobal person.pk person.disabledEntirely) ] [ text "Enabled" ]

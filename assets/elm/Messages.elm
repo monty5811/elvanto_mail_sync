@@ -4,7 +4,7 @@ import ElvantoModels exposing (..)
 import Http
 import Http.Progress as Progress exposing (Progress(..))
 import Models exposing (..)
-import Navigation exposing (Location)
+
 
 
 -- MESSAGES
@@ -12,7 +12,7 @@ import Navigation exposing (Location)
 
 type Msg
     = NoOp
-    | UrlChange Location
+    | UrlChange (Maybe Route)
     | LoadData
     | UpdateGroupFilter String
     | UpdatePersonFilter String

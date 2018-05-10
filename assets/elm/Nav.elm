@@ -1,60 +1,35 @@
-module Nav exposing (..)
+module Nav exposing (toPath, toRoute, urlUpdate)
 
-import ElvantoModels exposing (GroupPk)
-import ElvantoModels exposing (Groups, nullRegex)
+import ElvantoModels exposing (GroupPk, Groups, nullRegex)
 import Helpers exposing (..)
 import Messages exposing (Msg(..))
 import Models exposing (..)
-import Navigation exposing (Location)
-import UrlParser exposing (Parser, (</>), int, map, oneOf, s)
+import Url
+import Url.Parser exposing ((</>), Parser, Url, int, map, oneOf, parse, s)
 
 
-urlUpdate : Location -> Model -> ( Model, Cmd Msg )
-urlUpdate location model =
-    let
-        page =
-            Maybe.withDefault Home (pathParser location)
-    in
-        case page of
-            Group pk ->
-                ( { model
-                    | currentPage = page
-                    , activeGroupPk = pk
-                    , emailField = getGroupEmail model.groups pk
-                    , pushAutoField = getGroupPushAuto model.groups pk
-                  }
-                , focus "personfilter"
-                )
-
-            _ ->
-                ( { model
-                    | currentPage = page
-                    , activeGroupPk = 0
-                    , formStatus = NoRequest
-                    , pushGroupStatus = NotClicked
-                    , groupFilter = nullRegex
-                  }
-                , focus "groupfilter"
-                )
+urlUpdate : Url -> Msg
+urlUpdate url =
+    UrlChange <| toRoute url
 
 
-toPath : Page -> String
-toPath page =
-    case page of
+toRoute : Url -> Maybe Route
+toRoute url =
+    parse routeParser url
+
+
+toPath : Route -> String
+toPath route =
+    case route of
         Home ->
-            "/"
+            Url.absolute [] []
 
         Group id ->
-            "/group/" ++ toString id
+            Url.absolute [ "/group/", String.fromInt id ] []
 
 
-pathParser : Location -> Maybe Page
-pathParser location =
-    UrlParser.parsePath pageParser location
-
-
-pageParser : Parser (Page -> a) a
-pageParser =
+routeParser : Parser (Route -> a) a
+routeParser =
     oneOf
         [ map Home (s "")
         , map Group (s "group" </> int)

@@ -22,6 +22,17 @@ type alias ElvantoGroup =
     }
 
 
+groupToString : ElvantoGroup -> String
+groupToString g =
+    String.join ","
+        [ String.fromInt g.pk
+        , g.name
+        , Maybe.withDefault "" g.googleEmail
+        , Maybe.withDefault "Never" g.lastPulled
+        , Maybe.withDefault "Never" g.lastPushed
+        ]
+
+
 type alias ElvantoPerson =
     { email : String
     , fullName : String
@@ -29,6 +40,15 @@ type alias ElvantoPerson =
     , disabledEntirely : Bool
     , disabledGroups : List Int
     }
+
+
+personToString : ElvantoPerson -> String
+personToString p =
+    String.join ","
+        [ p.email
+        , p.fullName
+        , String.fromInt p.pk
+        ]
 
 
 type alias People =
@@ -46,7 +66,7 @@ nullGroup =
 
 nullRegex : Regex.Regex
 nullRegex =
-    Regex.regex ""
+    Regex.never
 
 
 groupsUrl : String
