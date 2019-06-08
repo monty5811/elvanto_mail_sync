@@ -16,7 +16,7 @@ Small webapp to sync Elvanto group members to mailing lists on a Google apps dom
 
 This app should run comfortably on Heroku's free tier.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://www.heroku.com/deploy/?template=https://github.com/monty5811/elvanto_mail_sync)
 
  - Create credentials on google - you need to create an application with OAuth credentials and a service account
  - Click the push to deploy button
